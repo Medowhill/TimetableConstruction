@@ -22,6 +22,7 @@ public class Period {
 	public Period(int day, int hour) {
 		this.day = day;
 		this.hour = hour;
+		classes = new ArrayList<>();
 	}
 
 	// 분반을 교시에 배치

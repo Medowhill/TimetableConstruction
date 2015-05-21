@@ -28,6 +28,8 @@ public class Student {
 	public Student(String id, int grade) {
 		this.id = id;
 		this.grade = grade;
+		courses = new ArrayList<>();
+		classes = new ArrayList<>();
 	}
 
 	// 과목을 추가
@@ -40,9 +42,13 @@ public class Student {
 		classes.add(divideClass);
 	}
 
-	// Getter
+	// 과목 getter
 	public ArrayList<Course> getCourses() {
 		return courses;
+	}
+
+	public String toString() {
+		return id;
 	}
 
 }

@@ -37,6 +37,9 @@ public class DivideClass {
 		lastingTimeComposition = new int[timeComposition.length];
 		for (int i = 0; i < timeComposition.length; i++)
 			lastingTimeComposition[i] = timeComposition[i];
+
+		students = new ArrayList<>();
+		periods = new ArrayList<>();
 	}
 
 	// 분반의 정원이 다 찼는지를 return
@@ -77,9 +80,22 @@ public class DivideClass {
 		}
 	}
 
-	// Getter
+	// 현재 배정된 학생 수를 return
+	public int getStudentNumber() {
+		return students.size();
+	}
+
+	// 과목 getter
 	public Course getCourse() {
 		return course;
+	}
+
+	public ArrayList<Student> getStudents() {
+		return students;
+	}
+
+	public String toString() {
+		return course.toString() + "[" + number + "]: " + students;
 	}
 
 }

@@ -32,7 +32,7 @@ public class Course {
 		this.name = name;
 	}
 
-	// Getter
+	// 현재 학생을 배정 중인 분반을 return
 	public DivideClass getAssigningClass() {
 		if (assigningClass == null || assigningClass.isFull())
 			assigningClass = new DivideClass(this, ++madeClass, studentNumber
@@ -42,17 +42,23 @@ public class Course {
 		return assigningClass;
 	}
 
-	// Setter
+	// 분반 수 setter
 	public void setClassNumber(int classNumber) {
 		this.classNumber = classNumber;
 	}
 
+	// 학생 수 setter
 	public void setStudentNumber(int studentNumber) {
 		this.studentNumber = studentNumber;
 	}
 
+	// 수업 시수 구성 setter
 	public void setTimeComposition(int[] timeComposition) {
 		this.timeComposition = timeComposition;
+	}
+
+	public String toString() {
+		return name;
 	}
 
 }
