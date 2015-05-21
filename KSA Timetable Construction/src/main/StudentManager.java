@@ -9,7 +9,7 @@ import pool.Student;
 public class StudentManager {
 
 	// 학생을 분반에 배정
-	public ArrayList<DivideClass> assignStudent(ArrayList<Student> students) {
+	public ArrayList<DivideClass> assignStudents(ArrayList<Student> students) {
 		ArrayList<DivideClass> classes = new ArrayList<>();
 
 		for (Student student : students) {

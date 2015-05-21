@@ -42,6 +42,20 @@ public class Student {
 		classes.add(divideClass);
 	}
 
+	// 교시를 추가
+	public void addPeriods(Period[] newPeriod) {
+		for (int i = 0; i < newPeriod.length; i++)
+			periods.add(newPeriod[i]);
+	}
+
+	// 해당 교시에 배정할 수 있는지 return
+	public boolean canUse(Period[] newPeriod) {
+		for (int i = 0; i < newPeriod.length; i++)
+			if (periods.contains(newPeriod[i]))
+				return false;
+		return true;
+	}
+
 	// 과목 getter
 	public ArrayList<Course> getCourses() {
 		return courses;

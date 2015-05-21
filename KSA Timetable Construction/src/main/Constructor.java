@@ -33,10 +33,12 @@ public class Constructor {
 		}
 
 		StudentManager studentManager = new StudentManager();
-		classes = studentManager.assignStudent(students);
+		classes = studentManager.assignStudents(students);
 
-		for (DivideClass divideClass : classes)
-			System.out.println(divideClass);
+		// for (DivideClass divideClass : classes)
+		// System.out.println(divideClass);
+
+		ClassManager classManager = new ClassManager();
 	}
 
 }

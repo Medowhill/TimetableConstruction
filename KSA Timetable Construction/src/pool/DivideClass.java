@@ -57,7 +57,7 @@ public class DivideClass {
 	public int getMaxContinuousTime() {
 		for (int i = lastingTimeComposition.length - 1; i > 0; i--)
 			if (lastingTimeComposition[i] != 0)
-				return i;
+				return i + 1;
 		return 0;
 	}
 
@@ -67,6 +67,9 @@ public class DivideClass {
 		for (Period period : periods)
 			if (period.day == day)
 				return false;
+		for (Student student : students)
+			if (!student.canUse(newPeriod))
+				return false;
 		return true;
 	}
 
@@ -74,8 +77,11 @@ public class DivideClass {
 	public void addPeriods(Period[] newPeriod) {
 		if (lastingTimeComposition.length >= newPeriod.length
 				&& lastingTimeComposition[newPeriod.length - 1] > 0) {
-			for (int i = 0; i < newPeriod.length; i++)
+			for (int i = 0; i < newPeriod.length; i++) {
 				periods.add(newPeriod[i]);
+				for (Student student : students)
+					student.addPeriods(newPeriod);
+			}
 			lastingTimeComposition[newPeriod.length - 1]--;
 		}
 	}

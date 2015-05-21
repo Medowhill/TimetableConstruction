@@ -33,58 +33,6 @@ public class Graph {
 		return true;
 	}
 
-	private void clique_old(int[] vertices, int size) {
-		if (vertices.length == 0) {
-			if (size > max)
-				max = size;
-			return;
-		}
-
-		while (vertices.length != 0) {
-
-			// System.out.println(size + "," + vertices.length + "," + max);
-
-			if (size + vertices.length <= max)
-				return;
-
-			int min = vertices[0];
-
-			int k = 0;
-			int[] tmpVertices = new int[vertices.length - 1];
-			for (int i = 0; i < vertices.length; i++) {
-				if (vertices[i] != min) {
-					tmpVertices[k] = vertices[i];
-					k++;
-				}
-			}
-			vertices = tmpVertices;
-
-			tmpVertices = new int[vertices.length];
-			k = 0;
-			for (int i = 0; i < vertices.length; i++) {
-				if (edges[vertices[i]][min]) {
-					tmpVertices[k] = vertices[i];
-					k++;
-				}
-			}
-
-			int[] newVertices = new int[k];
-			for (int i = 0; i < k; i++)
-				newVertices[i] = tmpVertices[i];
-
-			clique_old(newVertices, size + 1);
-		}
-	}
-
-	public int maxClique_old() {
-		max = 0;
-		int[] vertices = new int[edges.length];
-		for (int i = 0; i < vertices.length; i++)
-			vertices[i] = i;
-		clique_old(vertices, 0);
-		return max;
-	}
-
 	private void clique(int[] vertices, int size) {
 
 		if (vertices.length == 0) {
