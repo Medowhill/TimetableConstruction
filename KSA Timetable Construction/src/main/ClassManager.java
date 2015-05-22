@@ -9,11 +9,12 @@ import pool.Student;
 
 public class ClassManager {
 
+	private int[] prevHour;
+
 	public boolean assignClasses(ArrayList<DivideClass> classes,
-			ArrayList<Period> periods) {
+			Period[][] periods) {
 
 		int prevMax = Integer.MAX_VALUE;
-		Period usedPeriod = new Period(0, 0);
 
 		while (true) {
 
@@ -28,12 +29,9 @@ public class ClassManager {
 				return true;
 
 			if (max < prevMax)
-				usedPeriod = new Period(0, 0);
+				prevHour = new int[] { -1, -1, -1, -1, -1 };
 
-			// log
-			System.out.println(max);
-
-			Period[] assigningPeriods = getPeriods(periods, max, usedPeriod);
+			Period[] assigningPeriods = getPeriods(periods, max);
 
 			if (assigningPeriods == null)
 				return false;
@@ -49,6 +47,10 @@ public class ClassManager {
 					assigningClasses.add(divideClass);
 
 			if (!assigningClasses.isEmpty()) {
+
+				// log
+				System.out.println(assigningClasses);
+
 				Graph graph = new Graph(assigningClasses.size());
 
 				for (int i = 0; i < assigningClasses.size(); i++) {
@@ -76,7 +78,6 @@ public class ClassManager {
 			}
 
 			prevMax = max;
-			usedPeriod = assigningPeriods[assigningPeriods.length - 1];
 
 		}
 
@@ -91,33 +92,40 @@ public class ClassManager {
 		return true;
 	}
 
-	private Period[] getPeriods(ArrayList<Period> periods, int time,
-			Period usedPeriod) {
-		Period[] result = new Period[time];
-
-		int add = 0;
-		int prevHour = 0;
-
-		for (Period period : periods) {
-			if (period.day < usedPeriod.day)
-				continue;
-			int hour = period.hour;
-			if (period.day == usedPeriod.day && hour <= usedPeriod.hour)
-				continue;
-
-			if (prevHour + 1 == hour)
-				result[add++] = period;
-			else {
-				result[0] = period;
-				add = 1;
+	private Period[] getPeriods(Period[][] periods, int time) {
+		loop: while (true) {
+			int min = prevHour[0];
+			int day = 0;
+			for (int i = 1; i < prevHour.length; i++) {
+				if (min > prevHour[i]) {
+					min = prevHour[i];
+					day = i;
+				}
 			}
 
-			prevHour = hour;
+			if (min == Integer.MAX_VALUE)
+				return null;
 
-			if (add == time)
-				return result;
+			if (min + time >= periods[day].length) {
+				prevHour[day] = Integer.MAX_VALUE;
+				continue;
+			}
+
+			Period[] result = new Period[time];
+			for (int i = 0; i < time; i++) {
+				result[i] = periods[day][min + 1 + i];
+				if (i > 0) {
+					if (result[i - 1].hour == 1
+							|| result[i].hour != result[i - 1].hour + 1) {
+						prevHour[day]++;
+						continue loop;
+					}
+				}
+			}
+
+			prevHour[day] += time;
+			return result;
+
 		}
-
-		return null;
 	}
 }

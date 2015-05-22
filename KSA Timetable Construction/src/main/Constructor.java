@@ -17,7 +17,7 @@ public class Constructor {
 	private static ArrayList<Course> courses = null;
 	private static ArrayList<Student> students = null;
 	private static ArrayList<DivideClass> classes = null;
-	private static ArrayList<Period> periods = null;
+	private static Period[][] periods = null;
 
 	public static void main(String[] args) {
 
