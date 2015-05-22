@@ -57,6 +57,7 @@ public class Course {
 		this.timeComposition = timeComposition;
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}

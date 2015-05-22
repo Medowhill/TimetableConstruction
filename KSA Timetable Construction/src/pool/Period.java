@@ -26,9 +26,13 @@ public class Period {
 	}
 
 	// 분반을 교시에 배치
-	public void addClasses(DivideClass[] newClass) {
-		for (int i = 0; i < newClass.length; i++)
-			classes.add(newClass[i]);
+	public void addClasses(ArrayList<DivideClass> newClasses) {
+		classes.addAll(newClasses);
+	}
+
+	@Override
+	public String toString() {
+		return (day + 1) + "-" + hour;
 	}
 
 }

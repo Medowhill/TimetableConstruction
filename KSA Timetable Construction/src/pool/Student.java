@@ -30,6 +30,7 @@ public class Student {
 		this.grade = grade;
 		courses = new ArrayList<>();
 		classes = new ArrayList<>();
+		periods = new HashSet<>();
 	}
 
 	// 과목을 추가
@@ -61,6 +62,7 @@ public class Student {
 		return courses;
 	}
 
+	@Override
 	public String toString() {
 		return id;
 	}

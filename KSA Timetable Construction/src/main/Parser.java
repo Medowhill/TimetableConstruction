@@ -84,8 +84,9 @@ public class Parser {
 	}
 
 	// 교시 정보를 parsing
-	public Period[][] parsePeriod(String fileName) throws FileNotFoundException {
-		Period[][] periods = new Period[5][];
+	public ArrayList<Period> parsePeriod(String fileName)
+			throws FileNotFoundException {
+		ArrayList<Period> periods = new ArrayList<>();
 
 		Scanner scanner = new Scanner(new File(fileName));
 
@@ -93,9 +94,8 @@ public class Parser {
 			String line = scanner.nextLine();
 			String[] data = line.split(",");
 
-			periods[i] = new Period[data.length];
 			for (int j = 0; j < data.length; j++)
-				periods[i][j] = new Period(i, Integer.parseInt(data[j]));
+				periods.add(new Period(i, Integer.parseInt(data[j])));
 		}
 
 		return periods;

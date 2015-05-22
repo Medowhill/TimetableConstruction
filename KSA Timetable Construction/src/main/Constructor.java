@@ -17,7 +17,7 @@ public class Constructor {
 	private static ArrayList<Course> courses = null;
 	private static ArrayList<Student> students = null;
 	private static ArrayList<DivideClass> classes = null;
-	private static Period[][] periods = null;
+	private static ArrayList<Period> periods = null;
 
 	public static void main(String[] args) {
 
@@ -36,9 +36,17 @@ public class Constructor {
 		classes = studentManager.assignStudents(students);
 
 		// for (DivideClass divideClass : classes)
-		// System.out.println(divideClass);
+		// System.out.println(divideClass.toString()
+		// + divideClass.getStudents().toString());
 
 		ClassManager classManager = new ClassManager();
+		boolean success = classManager.assignClasses(classes, periods);
+
+		for (DivideClass divideClass : classes)
+			System.out.println(divideClass.toString()
+					+ divideClass.getPeriods());
+
+		System.out.println(success);
 	}
 
 }

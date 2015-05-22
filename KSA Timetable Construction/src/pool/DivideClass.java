@@ -4,7 +4,8 @@
 
 package pool;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class DivideClass {
 	// 분반
@@ -22,7 +23,7 @@ public class DivideClass {
 	private final int maxStudentNumber;
 
 	// 분반에 배정된 학생들
-	private ArrayList<Student> students;
+	private HashSet<Student> students;
 
 	// 분반이 배치된 교시들
 	private ArrayList<Period> periods;
@@ -38,7 +39,7 @@ public class DivideClass {
 		for (int i = 0; i < timeComposition.length; i++)
 			lastingTimeComposition[i] = timeComposition[i];
 
-		students = new ArrayList<>();
+		students = new HashSet<>();
 		periods = new ArrayList<>();
 	}
 
@@ -55,7 +56,7 @@ public class DivideClass {
 
 	// 아직 배치되지 않은 수업 중 가장 긴 연속 수업 시수를 return
 	public int getMaxContinuousTime() {
-		for (int i = lastingTimeComposition.length - 1; i > 0; i--)
+		for (int i = lastingTimeComposition.length - 1; i >= 0; i--)
 			if (lastingTimeComposition[i] != 0)
 				return i + 1;
 		return 0;
@@ -96,12 +97,17 @@ public class DivideClass {
 		return course;
 	}
 
-	public ArrayList<Student> getStudents() {
+	// 학생 getter
+	public HashSet<Student> getStudents() {
 		return students;
 	}
 
+	@Override
 	public String toString() {
-		return course.toString() + "[" + number + "]: " + students;
+		return course.toString() + "[" + number + "]";
 	}
 
+	public ArrayList<Period> getPeriods() {
+		return periods;
+	}
 }
