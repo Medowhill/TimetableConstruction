@@ -11,7 +11,7 @@ public class ClassManager {
 
 	private int[] prevHour;
 
-	public boolean assignClasses(ArrayList<DivideClass> classes,
+	public int[] assignClasses(ArrayList<DivideClass> classes,
 			Period[][] periods) {
 
 		int prevMax = Integer.MAX_VALUE;
@@ -26,7 +26,7 @@ public class ClassManager {
 			}
 
 			if (max == 0)
-				return true;
+				return prevHour;
 
 			if (max < prevMax)
 				prevHour = new int[] { -1, -1, -1, -1, -1 };
@@ -34,11 +34,11 @@ public class ClassManager {
 			Period[] assigningPeriods = getPeriods(periods, max);
 
 			if (assigningPeriods == null)
-				return false;
+				return null;
 
 			// log
-			for (int i = 0; i < assigningPeriods.length; i++)
-				System.out.println(assigningPeriods[i]);
+			// for (int i = 0; i < assigningPeriods.length; i++)
+			// System.out.println(assigningPeriods[i]);
 
 			ArrayList<DivideClass> assigningClasses = new ArrayList<>();
 			for (DivideClass divideClass : classes)
@@ -49,7 +49,7 @@ public class ClassManager {
 			if (!assigningClasses.isEmpty()) {
 
 				// log
-				System.out.println(assigningClasses);
+				// System.out.println(assigningClasses);
 
 				Graph graph = new Graph(assigningClasses.size());
 
@@ -68,7 +68,7 @@ public class ClassManager {
 					newClasses.add(assigningClasses.get(maxClique[i]));
 
 				// log
-				System.out.println(newClasses);
+				// System.out.println(newClasses);
 
 				for (int i = 0; i < assigningPeriods.length; i++)
 					assigningPeriods[i].addClasses(newClasses);

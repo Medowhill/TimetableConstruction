@@ -6,7 +6,7 @@ package pool;
 
 import java.util.*;
 
-public class Student {
+public class Student implements Comparable<Student> {
 	// 학생
 
 	// 학번
@@ -67,4 +67,18 @@ public class Student {
 		return id;
 	}
 
+	public ArrayList<DivideClass> getClasses() {
+		return classes;
+	}
+
+	@Override
+	public int compareTo(Student o) {
+		// TODO Auto-generated method stub
+		if (this.courses.size() > o.getCourses().size())
+			return -1;
+		else if (this.courses.size() == o.getCourses().size())
+			return 0;
+		else
+			return 1;
+	}
 }
