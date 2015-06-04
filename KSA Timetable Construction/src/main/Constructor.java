@@ -53,15 +53,10 @@ public class Constructor {
 
 			long start = System.currentTimeMillis();
 
-			for (int i = 0; i < students.size(); i++) {
-				int rand = (int) (Math.random() * (students.size() - i)) + i;
-				Student tmp = students.get(rand);
-				students.set(rand, students.get(i));
-				students.set(i, tmp);
-			}
-
-			StudentManager studentManager = new StudentManager();
-			classes = studentManager.assignStudents(students);
+			StudentManager studentManager = new StudentManager(students, log);
+			studentManager.sortRandomly();
+			studentManager.sort();
+			classes = studentManager.assignStudents();
 
 			if (log) {
 				for (DivideClass divideClass : classes)
@@ -81,6 +76,7 @@ public class Constructor {
 			}
 
 			if (success != null) {
+				System.out.println(x + 1);
 
 				int sum = 0;
 				for (int i = 0; i < success.length; i++)
@@ -99,12 +95,13 @@ public class Constructor {
 					MAX_TIME = time;
 				if (time < MIN_TIME)
 					MIN_TIME = time;
+			} else {
+				x--;
 			}
 
 		}
 
 		pw.close();
-		System.out.println(N);
 		System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);
 		System.out.println(MIN + "\t" + MIN_TIME);
 		System.out.println(MAX + "\t" + MAX_TIME);
