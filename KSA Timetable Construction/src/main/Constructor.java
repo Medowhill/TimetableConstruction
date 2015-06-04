@@ -19,7 +19,7 @@ public class Constructor {
 	public static void main(String[] args) {
 
 		boolean log = false;
-		int N = 1;
+		int N = 100;
 		String outputFile = "D:\\result.txt";
 
 		int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;

@@ -22,6 +22,9 @@ public class DivideClass {
 	// 분반 정원
 	private final int maxStudentNumber;
 
+	// 교사 번호
+	public final int teacher;
+
 	// 분반에 배정된 학생들
 	private HashSet<Student> students;
 
@@ -29,10 +32,11 @@ public class DivideClass {
 	private ArrayList<Period> periods;
 
 	// 생성자
-	public DivideClass(Course course, int number, int maxStudentNumber,
-			int[] timeComposition) {
+	public DivideClass(Course course, int number, int teacher,
+			int maxStudentNumber, int[] timeComposition) {
 		this.course = course;
 		this.number = number;
+		this.teacher = teacher;
 		this.maxStudentNumber = maxStudentNumber;
 
 		lastingTimeComposition = new int[timeComposition.length];

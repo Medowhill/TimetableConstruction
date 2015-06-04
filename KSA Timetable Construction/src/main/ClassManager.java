@@ -89,7 +89,7 @@ public class ClassManager {
 	}
 
 	private boolean makeEdge(DivideClass dc1, DivideClass dc2) {
-		if (dc1.getCourse() == dc2.getCourse())
+		if (dc1.getCourse() == dc2.getCourse() && dc1.teacher == dc2.teacher)
 			return false;
 		for (Student student : dc2.getStudents())
 			if (dc1.getStudents().contains(student))

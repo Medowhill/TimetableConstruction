@@ -39,8 +39,8 @@ public class Course {
 	// 현재 학생을 배정 중인 분반을 return
 	public DivideClass getAssigningClass() {
 		if (assigningClass == null || assigningClass.isFull())
-			assigningClass = new DivideClass(this, ++madeClass, studentNumber
-					/ classNumber
+			assigningClass = new DivideClass(this, ++madeClass, (madeClass - 1)
+					% teacherNumber, studentNumber / classNumber
 					+ ((studentNumber % classNumber >= madeClass) ? 1 : 0),
 					timeComposition);
 		return assigningClass;
