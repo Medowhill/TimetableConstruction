@@ -101,6 +101,8 @@ public class Constructor {
 					MIN_TIME = time;
 			}
 
+			System.out.println(x);
+
 		}
 
 		pw.close();
