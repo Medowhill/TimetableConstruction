@@ -9,10 +9,15 @@ import pool.Student;
 
 public class ClassManager {
 
+	private boolean log;
+
 	private int[] prevHour;
 
-	public int[] assignClasses(ArrayList<DivideClass> classes,
-			Period[][] periods) {
+	ClassManager(boolean log) {
+		this.log = log;
+	}
+
+	int[] assignClasses(ArrayList<DivideClass> classes, Period[][] periods) {
 
 		int prevMax = Integer.MAX_VALUE;
 
@@ -36,9 +41,9 @@ public class ClassManager {
 			if (assigningPeriods == null)
 				return null;
 
-			// log
-			// for (int i = 0; i < assigningPeriods.length; i++)
-			// System.out.println(assigningPeriods[i]);
+			if (log)
+				for (int i = 0; i < assigningPeriods.length; i++)
+					System.out.println(assigningPeriods[i]);
 
 			ArrayList<DivideClass> assigningClasses = new ArrayList<>();
 			for (DivideClass divideClass : classes)
@@ -48,8 +53,8 @@ public class ClassManager {
 
 			if (!assigningClasses.isEmpty()) {
 
-				// log
-				// System.out.println(assigningClasses);
+				if (log)
+					System.out.println(assigningClasses);
 
 				Graph graph = new Graph(assigningClasses.size());
 
@@ -67,8 +72,8 @@ public class ClassManager {
 				for (int i = 0; i < maxClique.length; i++)
 					newClasses.add(assigningClasses.get(maxClique[i]));
 
-				// log
-				// System.out.println(newClasses);
+				if (log)
+					System.out.println(newClasses);
 
 				for (int i = 0; i < assigningPeriods.length; i++)
 					assigningPeriods[i].addClasses(newClasses);

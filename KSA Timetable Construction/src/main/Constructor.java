@@ -4,7 +4,9 @@
 
 package main;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import pool.Course;
@@ -18,8 +20,18 @@ public class Constructor {
 
 		boolean log = false;
 		int N = 100;
+		String outputFile = "D:\\result.txt";
+
 		int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
-		long start = System.currentTimeMillis();
+		long AVE_TIME = 0, MIN_TIME = Long.MAX_VALUE, MAX_TIME = 0;
+
+		PrintWriter pw = null;
+		try {
+			pw = new PrintWriter(new File(outputFile));
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+			return;
+		}
 
 		for (int x = 0; x < N; x++) {
 
@@ -39,8 +51,10 @@ public class Constructor {
 				System.exit(0);
 			}
 
+			long start = System.currentTimeMillis();
+
 			for (int i = 0; i < students.size(); i++) {
-				int rand = (int) (Math.random() * (students.size() - i));
+				int rand = (int) (Math.random() * (students.size() - i)) + i;
 				Student tmp = students.get(rand);
 				students.set(rand, students.get(i));
 				students.set(i, tmp);
@@ -55,8 +69,10 @@ public class Constructor {
 							+ divideClass.getStudents().toString());
 			}
 
-			ClassManager classManager = new ClassManager();
+			ClassManager classManager = new ClassManager(log);
 			int[] success = classManager.assignClasses(classes, periods);
+
+			long end = System.currentTimeMillis();
 
 			if (log) {
 				for (DivideClass divideClass : classes)
@@ -65,26 +81,33 @@ public class Constructor {
 			}
 
 			if (success != null) {
+
 				int sum = 0;
 				for (int i = 0; i < success.length; i++)
 					sum += success[i] + 1;
-				System.out.println(sum);
+
+				long time = end - start;
+
+				pw.println(sum + "\t" + time);
 				AVE += sum;
+				AVE_TIME += time;
 				if (sum > MAX)
 					MAX = sum;
 				if (sum < MIN)
 					MIN = sum;
+				if (time > MAX_TIME)
+					MAX_TIME = time;
+				if (time < MIN_TIME)
+					MIN_TIME = time;
 			}
 
 		}
 
-		long end = System.currentTimeMillis();
-
-		System.out.println();
-		System.out.println(1. * AVE / N);
-		System.out.println(MIN);
-		System.out.println(MAX);
-		System.out.println(1. * (end - start) / N);
+		pw.close();
+		System.out.println(N);
+		System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);
+		System.out.println(MIN + "\t" + MIN_TIME);
+		System.out.println(MAX + "\t" + MAX_TIME);
 
 	}
 }
