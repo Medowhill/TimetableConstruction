@@ -13,14 +13,13 @@ import pool.Course;
 import pool.Period;
 import pool.Student;
 
-public class Parser {
+class Parser {
 	// 파일을 읽어 정보를 parsing하는 parser
 
 	private ArrayList<Course> courses;
 
 	// 과목 정보를 parsing
-	public ArrayList<Course> parseCourse(String fileName)
-			throws FileNotFoundException {
+	ArrayList<Course> parseCourse(String fileName) throws FileNotFoundException {
 		courses = new ArrayList<>();
 
 		Scanner scanner = new Scanner(new File(fileName));
@@ -60,7 +59,7 @@ public class Parser {
 	}
 
 	// 학생 정보를 parsing
-	public ArrayList<Student> parseStudent(String fileName)
+	ArrayList<Student> parseStudent(String fileName)
 			throws FileNotFoundException {
 		ArrayList<Student> students = new ArrayList<>();
 
@@ -84,7 +83,7 @@ public class Parser {
 	}
 
 	// 교시 정보를 parsing
-	public Period[][] parsePeriod(String fileName) throws FileNotFoundException {
+	Period[][] parsePeriod(String fileName) throws FileNotFoundException {
 		Period[][] periods = new Period[5][];
 
 		Scanner scanner = new Scanner(new File(fileName));

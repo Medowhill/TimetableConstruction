@@ -7,7 +7,7 @@ import pool.Graph;
 import pool.Period;
 import pool.Student;
 
-public class ClassManager {
+class ClassManager {
 
 	private boolean log;
 
