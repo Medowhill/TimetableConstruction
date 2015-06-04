@@ -9,6 +9,8 @@ import pool.Student;
 
 class StudentManager {
 
+	private static final int LIMIT = 4;
+
 	private boolean log;
 
 	private ArrayList<Student> students;
@@ -58,7 +60,7 @@ class StudentManager {
 				}
 			}
 
-			if (max == 0) {
+			if (max < LIMIT) {
 				b = true;
 				x = 0;
 				cSet.clear();

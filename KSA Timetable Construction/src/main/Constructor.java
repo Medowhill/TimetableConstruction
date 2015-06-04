@@ -102,7 +102,6 @@ public class Constructor {
 		}
 
 		pw.close();
-		System.out.println(N);
 		System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);
 		System.out.println(MIN + "\t" + MIN_TIME);
 		System.out.println(MAX + "\t" + MAX_TIME);
