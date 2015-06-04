@@ -16,6 +16,10 @@ public class Course {
 	// 과목을 수강 신청한 학생의 수
 	private int studentNumber;
 
+	// 과목을 담당할 수 있는 교사의 수
+	// 한 교시에 과목의 분반이 최대 몇 개 배치될 수 있는지를 결정한다.
+	private int teacherNumber;
+
 	// 과목의 수업 시수 구성
 	// timeComposition[i-1]는 i교시 연속 강의의 수를 의미한다.
 	// {2, 1}이라면 1교시 수업 2개와 2교시 연강 1개로 구성된 수업이다.
@@ -50,6 +54,11 @@ public class Course {
 	// 학생 수 setter
 	public void setStudentNumber(int studentNumber) {
 		this.studentNumber = studentNumber;
+	}
+
+	// 교사 수 setter
+	public void setTeacherNumber(int teacherNumber) {
+		this.teacherNumber = teacherNumber;
 	}
 
 	// 수업 시수 구성 setter

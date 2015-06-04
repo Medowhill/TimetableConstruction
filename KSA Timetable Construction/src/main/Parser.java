@@ -54,6 +54,12 @@ public class Parser {
 			courses.get(i).setTimeComposition(timeComposition);
 		}
 
+		// 과목 교사 수 parsing
+		line = scanner.nextLine();
+		data = line.split(",");
+		for (int i = 0; i < data.length; i++)
+			courses.get(i).setTeacherNumber(Integer.parseInt(data[i]));
+
 		scanner.close();
 
 		return courses;
