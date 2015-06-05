@@ -19,8 +19,6 @@ class ClassManager {
 	private ArrayList<Period>[] periodsList;
 	private int minPeriod;
 
-	private int[] prevHour;
-
 	ClassManager(ArrayList<DivideClass> classes, Period[][] periods) {
 		this.classes = classes;
 		this.periods = periods;
@@ -48,7 +46,7 @@ class ClassManager {
 		return minPeriod;
 	}
 
-	private void assign(int prevMax, int depth) {
+	private void assign(Period prev, int prevMax, int depth) {
 
 		int max = 0;
 		for (DivideClass divideClass : classes) {
@@ -142,40 +140,28 @@ class ClassManager {
 		return true;
 	}
 
-	private Period[] getPeriods(Period[][] periods, int time) {
-		loop: while (true) {
-			int min = prevHour[0];
-			int day = 0;
-			for (int i = 1; i < prevHour.length; i++) {
-				if (min > prevHour[i]) {
-					min = prevHour[i];
-					day = i;
+	private Period[] getPeriods(Period prev, int time) {
+		int day = prev.day;
+		day += 1;
+		day %= 5;
+
+		int hour = prev.hour + 1;
+
+		if (periods[day][periods[day].length - 1].hour <= hour)
+			return null;
+
+		Period[] result = new Period[time];
+		for (int i = 0; i < time; i++) {
+			result[i] = periods[day][hour + i];
+			if (i > 0) {
+				if (result[i - 1].hour == 1
+						|| result[i].hour != result[i - 1].hour + 1) {
+					continue;
 				}
 			}
-
-			if (min == Integer.MAX_VALUE)
-				return null;
-
-			if (min + time >= periods[day].length) {
-				prevHour[day] = Integer.MAX_VALUE;
-				continue;
-			}
-
-			Period[] result = new Period[time];
-			for (int i = 0; i < time; i++) {
-				result[i] = periods[day][min + 1 + i];
-				if (i > 0) {
-					if (result[i - 1].hour == 1
-							|| result[i].hour != result[i - 1].hour + 1) {
-						prevHour[day]++;
-						continue loop;
-					}
-				}
-			}
-
-			prevHour[day] += time;
-			return result;
-
 		}
+
+		return result;
+
 	}
 }
