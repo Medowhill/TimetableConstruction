@@ -18,8 +18,8 @@ public class Constructor {
 
 	public static void main(String[] args) {
 
-		boolean log = false;
-		int N = 100;
+		boolean log = true;
+		int N = 1;
 		String outputFile = "D:\\result.txt";
 
 		int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
