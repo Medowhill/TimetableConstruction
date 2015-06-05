@@ -1,5 +1,6 @@
 package main;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import pool.DivideClass;
@@ -11,63 +12,73 @@ class ClassManager {
 
 	private boolean log;
 
+	private ArrayList<DivideClass> classes;
+	private Period[][] periods;
+
 	private int[] prevHour;
 
-	ClassManager(boolean log) {
+	ClassManager(ArrayList<DivideClass> classes, Period[][] periods, boolean log) {
+		this.classes = classes;
+		this.periods = periods;
 		this.log = log;
 	}
 
-	int[] assignClasses(ArrayList<DivideClass> classes, Period[][] periods) {
+	int assignClasses() {
 
 		int prevMax = Integer.MAX_VALUE;
 
-		while (true) {
+		assign(prevMax);
 
-			int max = 0;
-			for (DivideClass divideClass : classes) {
-				int maxContinuousTime = divideClass.getMaxContinuousTime();
-				if (maxContinuousTime > max)
-					max = maxContinuousTime;
-			}
+	}
 
-			if (max == 0)
-				return prevHour;
+	private boolean assign(int prevMax) {
 
-			if (max < prevMax)
-				prevHour = new int[] { -1, -1, -1, -1, -1 };
+		int max = 0;
+		for (DivideClass divideClass : classes) {
+			int maxContinuousTime = divideClass.getMaxContinuousTime();
+			if (maxContinuousTime > max)
+				max = maxContinuousTime;
+		}
 
-			Period[] assigningPeriods = getPeriods(periods, max);
+		if (max == 0)
+			return true;
 
-			if (assigningPeriods == null)
-				return null;
+		if (max < prevMax)
+			prevHour = new int[] { -1, -1, -1, -1, -1 };
+
+		Period[] assigningPeriods = getPeriods(periods, max);
+
+		if (assigningPeriods == null)
+			return false;
+
+		if (log)
+			for (int i = 0; i < assigningPeriods.length; i++)
+				System.out.println(assigningPeriods[i]);
+
+		ArrayList<DivideClass> assigningClasses = new ArrayList<>();
+		for (DivideClass divideClass : classes)
+			if (divideClass.getMaxContinuousTime() == max
+					&& divideClass.canUse(assigningPeriods))
+				assigningClasses.add(divideClass);
+
+		if (!assigningClasses.isEmpty()) {
 
 			if (log)
-				for (int i = 0; i < assigningPeriods.length; i++)
-					System.out.println(assigningPeriods[i]);
+				System.out.println(assigningClasses);
 
-			ArrayList<DivideClass> assigningClasses = new ArrayList<>();
-			for (DivideClass divideClass : classes)
-				if (divideClass.getMaxContinuousTime() == max
-						&& divideClass.canUse(assigningPeriods))
-					assigningClasses.add(divideClass);
+			Graph graph = new Graph(assigningClasses.size());
 
-			if (!assigningClasses.isEmpty()) {
-
-				if (log)
-					System.out.println(assigningClasses);
-
-				Graph graph = new Graph(assigningClasses.size());
-
-				for (int i = 0; i < assigningClasses.size(); i++) {
-					for (int j = i + 1; j < assigningClasses.size(); j++) {
-						if (makeEdge(assigningClasses.get(i),
-								assigningClasses.get(j)))
-							graph.addEdge(i, j);
-					}
+			for (int i = 0; i < assigningClasses.size(); i++) {
+				for (int j = i + 1; j < assigningClasses.size(); j++) {
+					if (makeEdge(assigningClasses.get(i),
+							assigningClasses.get(j)))
+						graph.addEdge(i, j);
 				}
+			}
 
-				int[] maxClique = graph.maxClique(false);
+			ArrayList<int[]> maxCliques = graph.maxClique(false);
 
+			for (int[] maxClique : maxCliques) {
 				ArrayList<DivideClass> newClasses = new ArrayList<>();
 				for (int i = 0; i < maxClique.length; i++)
 					newClasses.add(assigningClasses.get(maxClique[i]));
@@ -80,10 +91,21 @@ class ClassManager {
 
 				for (DivideClass divideClass : newClasses)
 					divideClass.addPeriods(assigningPeriods);
+
+				if (assign(max))
+					return true;
+				else {
+					for (int i = 0; i < assigningPeriods.length; i++)
+						assigningPeriods[i].removeClasses(newClasses);
+
+					for (DivideClass divideClass : newClasses)
+						divideClass.removePeriods(assigningPeriods);
+				}
 			}
 
-			prevMax = max;
-
+			return false;
+		} else {
+			return true;
 		}
 
 	}

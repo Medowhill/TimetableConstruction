@@ -30,6 +30,11 @@ public class Period {
 		classes.addAll(newClasses);
 	}
 
+	// 분반을 교시에서 제거
+	public void removeClasses(ArrayList<DivideClass> newClasses) {
+		classes.removeAll(newClasses);
+	}
+
 	@Override
 	public String toString() {
 		return (day + 1) + "-" + hour;

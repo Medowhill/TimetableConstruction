@@ -78,12 +78,25 @@ public class DivideClass {
 	public void addPeriods(Period[] newPeriod) {
 		if (lastingTimeComposition.length >= newPeriod.length
 				&& lastingTimeComposition[newPeriod.length - 1] > 0) {
-			for (int i = 0; i < newPeriod.length; i++) {
+			for (int i = 0; i < newPeriod.length; i++)
 				periods.add(newPeriod[i]);
-				for (Student student : students)
-					student.addPeriods(newPeriod);
-			}
+
+			for (Student student : students)
+				student.addPeriods(newPeriod);
 			lastingTimeComposition[newPeriod.length - 1]--;
+		}
+	}
+
+	// 분반을 해당 교시에서 제거
+	public void removePeriods(Period[] newPeriod) {
+		if (lastingTimeComposition.length >= newPeriod.length) {
+			for (int i = 0; i < newPeriod.length; i++)
+				periods.remove(newPeriod[i]);
+
+			for (Student student : students)
+				student.addPeriods(newPeriod);
+
+			lastingTimeComposition[newPeriod.length - 1]++;
 		}
 	}
 

@@ -49,6 +49,12 @@ public class Student implements Comparable<Student> {
 			periods.add(newPeriod[i]);
 	}
 
+	// 교시를 제거
+	public void removePeriods(Period[] newPeriod) {
+		for (int i = 0; i < newPeriod.length; i++)
+			periods.remove(newPeriod[i]);
+	}
+
 	// 해당 교시에 배정할 수 있는지 return
 	public boolean canUse(Period[] newPeriod) {
 		for (int i = 0; i < newPeriod.length; i++)
