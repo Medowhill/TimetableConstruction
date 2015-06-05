@@ -18,20 +18,31 @@ public class Constructor {
 
 	public static void main(String[] args) {
 
-		boolean log = false;
-		int N = 100;
+		boolean log = true;
+		int N = 1;
+
 		String outputFile = "D:\\result.txt";
+		String logFile = "D:\\log.txt";
 
 		int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
 		long AVE_TIME = 0, MIN_TIME = Long.MAX_VALUE, MAX_TIME = 0;
 
 		PrintWriter pw = null;
+		PrintWriter pw_log = null;
+
 		try {
 			pw = new PrintWriter(new File(outputFile));
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			if (log)
+				pw_log = new PrintWriter(new File(logFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			return;
 		}
+
+		StudentManager.log = log;
+		ClassManager.log = log;
+		StudentManager.pw = pw_log;
+		ClassManager.pw = pw_log;
 
 		for (int x = 0; x < N; x++) {
 
@@ -41,7 +52,6 @@ public class Constructor {
 			Period[][] periods = null;
 
 			Parser parser = new Parser();
-
 			try {
 				courses = parser.parseCourse("2015_1_course.csv");
 				students = parser.parseStudent("2015_1_student.csv");
@@ -53,55 +63,55 @@ public class Constructor {
 
 			long start = System.currentTimeMillis();
 
-			StudentManager studentManager = new StudentManager(students, log);
+			StudentManager studentManager = new StudentManager(students);
 			studentManager.sortRandomly();
 			studentManager.sort();
 			classes = studentManager.assignStudents();
 
-			if (log) {
-				for (DivideClass divideClass : classes)
-					System.out.println(divideClass.toString()
-							+ divideClass.getStudents().toString());
-			}
-
-			ClassManager classManager = new ClassManager(log);
-			int[] success = classManager.assignClasses(classes, periods);
+			ClassManager classManager = new ClassManager(classes, periods);
+			int period = classManager.assignClasses();
 
 			long end = System.currentTimeMillis();
 
+			// LOG =============================================================
 			if (log) {
-				for (DivideClass divideClass : classes)
-					System.out.println(divideClass.toString()
+				for (DivideClass divideClass : classes) {
+					pw_log.println(divideClass.toString()
+							+ divideClass.getStudents().toString());
+					pw_log.println(divideClass.toString()
 							+ divideClass.getPeriods());
+				}
 			}
+			// LOG =============================================================
 
-			if (success != null) {
-				System.out.println(x + 1);
-
-				int sum = 0;
-				for (int i = 0; i < success.length; i++)
-					sum += success[i] + 1;
-
+			// RESULT ==========================================================
+			if (period != -1) {
 				long time = end - start;
 
-				pw.println(sum + "\t" + time);
-				AVE += sum;
+				AVE += period;
 				AVE_TIME += time;
-				if (sum > MAX)
-					MAX = sum;
-				if (sum < MIN)
-					MIN = sum;
+
+				if (period > MAX)
+					MAX = period;
+				if (period < MIN)
+					MIN = period;
 				if (time > MAX_TIME)
 					MAX_TIME = time;
 				if (time < MIN_TIME)
 					MIN_TIME = time;
+
+				System.out.println(x + 1);
+				pw.println(period + "\t" + time);
 			} else {
 				x--;
 			}
+			// RESULT ==========================================================
 
 		}
 
 		pw.close();
+		pw_log.close();
+
 		System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);
 		System.out.println(MIN + "\t" + MIN_TIME);
 		System.out.println(MAX + "\t" + MAX_TIME);

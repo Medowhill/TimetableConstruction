@@ -1,5 +1,6 @@
 package main;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -11,13 +12,13 @@ class StudentManager {
 
 	private static final int LIMIT = 4;
 
-	private boolean log;
+	public static boolean log;
+	public static PrintWriter pw;
 
 	private ArrayList<Student> students;
 
-	StudentManager(ArrayList<Student> students, boolean log) {
+	StudentManager(ArrayList<Student> students) {
 		this.students = students;
-		this.log = log;
 	}
 
 	// 학생을 무작위 순서로 배열
@@ -86,8 +87,8 @@ class StudentManager {
 			}
 
 			if (log)
-				System.out.println(i + "(" + x + "," + cSet.size() + "): "
-						+ student + ": " + student.getCourses());
+				pw.println(i + "(" + x + "," + cSet.size() + "): " + student
+						+ ": " + student.getCourses());
 		}
 	}
 
