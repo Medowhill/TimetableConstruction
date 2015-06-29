@@ -1,213 +1,220 @@
 package pool;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+
 public class Graph {
 
-	private int edgeNum = 0;
+    private int size;
 
-	private int max;
-	private boolean found;
-	private int[] c;
-	private int[] max_clique;
-	private int[] real_max_clique;
+    private Vertex[] vertices;
 
-	private final boolean[][] edges;
+    private boolean[][] edgeSet;
 
-	public Graph(int vertices) {
-		edges = new boolean[vertices][vertices];
-		c = new int[vertices];
-		max_clique = new int[vertices];
-	}
+    public Graph(int size) {
+        this.size = size;
 
-	public boolean addEdge(int i, int j) {
-		if (i < 0 || i >= edges.length)
-			return false;
-		if (j < 0 || j >= edges.length)
-			return false;
-		if (i == j)
-			return false;
-		if (edges[i][j])
-			return false;
-		edges[i][j] = true;
-		edges[j][i] = true;
-		edgeNum++;
-		return true;
-	}
+        vertices = new Vertex[size];
+        for (int i = 0; i < size; i++)
+            vertices[i] = new Vertex(i);
 
-	private void clique(int[] vertices, int size) {
+        edgeSet = new boolean[size][size];
+    }
 
-		if (vertices.length == 0) {
-			if (size > max) {
-				max = size;
-				real_max_clique = new int[max];
-				for (int i = 0; i < max; i++)
-					real_max_clique[i] = max_clique[i];
-				found = true;
-			}
-			return;
-		}
+    public boolean addEdge(int v1, int v2) {
+        if (v1 < 0 || v2 < 0 || v1 >= vertices.length || v2 >= vertices.length)
+            return false;
+        if (edgeSet[v1][v2] || edgeSet[v2][v1])
+            return false;
 
-		while (vertices.length != 0) {
-			if (size + vertices.length <= max)
-				return;
+        edgeSet[v1][v2] = true;
+        edgeSet[v2][v1] = true;
+        vertices[v1].addEdge(vertices[v2]);
+        vertices[v2].addEdge(vertices[v1]);
+        return true;
+    }
 
-			int min = vertices[0];
+    public int[] coloring() {
+        ArrayList<Vertex> vertexList = new ArrayList<>(size);
+        for (Vertex vertex : vertices)
+            vertexList.add(vertex);
+        Collections.sort(vertexList);
 
-			if (size + c[min] <= max)
-				return;
+        vertexList.get(0).color = 1;
+        System.out.println(vertexList.get(0).number);
+        vertexList.remove(0);
 
-			vertices = remove(vertices, min);
+        for (int i = 1; i < size; i++) {
+            Vertex current = vertexList.get(0);
+            for (Vertex vertex : vertexList)
+                if (current.getDegreeOfSaturation() < vertex.getDegreeOfSaturation())
+                    current = vertex;
+            vertexList.remove(current);
 
-			max_clique[size] = min;
+            System.out.println(current.number);
 
-			clique(adjacent(vertices, min), size + 1);
+            for (int j = 1; j <= i + 1; j++) {
+                boolean b = true;
+                for (Vertex vertex : current.edges) {
+                    if (vertex.color == j) {
+                        b = false;
+                        break;
+                    }
+                }
+                if (b) {
+                    current.color = j;
+                    break;
+                }
+            }
+        }
 
-			if (found)
-				return;
-		}
-	}
+        int[] color = new int[size];
+        for (int i = 0; i < vertices.length; i++)
+            color[i] = vertices[i].color;
+        return color;
+    }
 
-	public int[] maxClique(boolean ordering) {
-		max = 0;
+    public int[] coloring_exact() {
 
-		int[] arr;
-		if (ordering)
-			arr = ordering();
-		else {
-			arr = new int[edges.length];
-			for (int i = 0; i < arr.length; i++)
-				arr[i] = i;
-		}
+        int[] optimal = null;
 
-		for (int i = edges.length - 1; i >= 0; i--) {
-			found = false;
+        ArrayList<Vertex> vertexList = new ArrayList<>(size);
+        for (Vertex vertex : vertices)
+            vertexList.add(vertex);
+        Collections.sort(vertexList);
 
-			int k = 0;
-			int[] tmpVertices = new int[edges.length - i];
-			for (int j = 1; j < tmpVertices.length; j++) {
-				if (edges[arr[i + j]][arr[i]]) {
-					tmpVertices[k] = arr[i + j];
-					k++;
-				}
-			}
+        int start = 0; // starting index
+        int optColorNum = size + 1; // optimal number of colors
+        Vertex current = vertexList.get(0); // current vertex to be colored
+        int[] colors = new int[size + 1]; // colors[j] = number of colors at A[0] ... A[j-1]
+        colors[0] = 0;
+        ArrayList<Integer> freeColors = new ArrayList<>(); // set of free colors
+        freeColors.add(1);
+        current.setFreeColors(freeColors);
 
-			int[] vertices = new int[k];
-			for (int j = 0; j < vertices.length; j++)
-				vertices[j] = tmpVertices[j];
+        while (start >= 0) {
+            boolean backtracking = false;
 
-			max_clique[0] = arr[i];
+            for (int i = start; i < size; i++) {
+                if (i > start) {
+                    current = null;
+                    for (Vertex vertex : vertexList)
+                        if (vertex.color == 0)
+                            if (current == null || current.getDegreeOfSaturation() < vertex.getDegreeOfSaturation())
+                                current = vertex;
+                    freeColors.clear();
+                    freeColors.addAll(current.freeColors);
+                    Collections.sort(freeColors);
+                }
+                if (freeColors.size() > 0) {
+                    int free = freeColors.get(0);
+                    current.color = free;
+                    freeColors.remove(0);
+                    current.setFreeColors(freeColors);
+                    int l = colors[i - 1 + 1];
+                    colors[i + 1] = Math.max(free, l);
+                } else {
+                    start = i - 1;
+                    backtracking = true;
+                    break;
+                }
+            }
 
-			clique(vertices, 1);
+            if (backtracking) {
+                if (start >= 0) {
+                    current = vertexList.get(start);
+                    current.color = 0;
+                    freeColors.clear();
+                    freeColors.addAll(current.freeColors);
+                }
+            } else {
+                optimal = new int[size];
+                for (Vertex vertex : vertexList)
+                    optimal[vertex.number] = vertex.color;
+                optColorNum = colors[size - 1 + 1];
+                for (int i = 0; i < vertexList.size(); i++) {
+                    if (vertexList.get(i).color == optColorNum) {
+                        start = i - 1;
+                        break;
+                    }
+                }
+                if (start < 0)
+                    break;
+                for (int i = start; i < vertexList.size(); i++)
+                    vertexList.get(i).color = 0;
+                for (int i = 0; i <= start; i++) {
+                    current = vertexList.get(i);
+                    freeColors.clear();
+                    freeColors.addAll(current.freeColors);
+                    for (int j = 0; j < freeColors.size(); j++) {
+                        if (freeColors.get(j) >= optColorNum) {
+                            freeColors.remove(j);
+                            j--;
+                        }
+                    }
+                }
+            }
+        }
 
-			c[arr[i]] = max;
-		}
+        return optimal;
+    }
 
-		return real_max_clique;
-	}
+    private class Vertex implements Comparable {
 
-	private int[] ordering() {
+        final int number;
 
-		// long start = System.currentTimeMillis();
+        final LinkedHashSet<Vertex> edges;
+        final ArrayList<Integer> freeColors;
 
-		int[] orderedVertices = new int[edges.length];
-		int count = orderedVertices.length - 1;
+        int color = 0;
 
-		int[] vertices = new int[edges.length];
-		for (int i = 0; i < vertices.length; i++)
-			vertices[i] = i;
+        Vertex(int number) {
+            this.number = number;
+            this.edges = new LinkedHashSet<>();
+            this.freeColors = new ArrayList<>();
+        }
 
-		while (vertices.length > 0) {
-			int[] vertices_ = new int[vertices.length];
-			for (int i = 0; i < vertices.length; i++)
-				vertices_[i] = vertices[i];
+        void addEdge(Vertex vertex) {
+            this.edges.add(vertex);
+        }
 
-			int[] degrees = new int[edges.length];
-			for (int i = 0; i < vertices.length; i++) {
-				for (int j = i + 1; j < vertices.length; j++) {
-					if (edges[vertices[i]][vertices[j]]) {
-						degrees[vertices[i]]++;
-						degrees[vertices[j]]++;
-					}
-				}
-			}
+        void setFreeColors(ArrayList<Integer> freeColors) {
+            this.freeColors.clear();
+            this.freeColors.addAll(freeColors);
+        }
 
-			while (vertices_.length > 0) {
-				int vertex = findMaxDegreeVertex(vertices_, degrees);
-				orderedVertices[count] = vertex;
-				count--;
-				vertices_ = disjoint(vertices_, vertex);
-				vertices = remove(vertices, vertex);
-			}
-		}
+        int getDegree() {
+            return this.edges.size();
+        }
 
-		// System.out.println(System.currentTimeMillis() - start);
+        int getDegreeOfSaturation() {
+            int degree = 0;
+            boolean[] colors = new boolean[size];
+            for (Vertex vertex : edges) {
+                if (vertex.color != 0) {
+                    if (!colors[vertex.color - 1]) {
+                        colors[vertex.color - 1] = true;
+                        degree++;
+                    }
+                }
+            }
+            return degree;
+        }
 
-		return orderedVertices;
-
-	}
-
-	private int[] remove(int[] arr, int x) {
-		int k = 0;
-		int[] narr = new int[arr.length - 1];
-		for (int i = 0; i < arr.length; i++) {
-			if (arr[i] != x) {
-				narr[k] = arr[i];
-				k++;
-			}
-		}
-
-		return narr;
-	}
-
-	private int[] adjacent(int[] arr, int x) {
-		int[] tmpArr = new int[arr.length];
-		int k = 0;
-		for (int i = 0; i < arr.length; i++) {
-			if (edges[arr[i]][x]) {
-				tmpArr[k] = arr[i];
-				k++;
-			}
-		}
-
-		int[] narr = new int[k];
-		for (int i = 0; i < k; i++)
-			narr[i] = tmpArr[i];
-
-		return narr;
-	}
-
-	private int[] disjoint(int[] arr, int x) {
-		int[] tmpArr = new int[arr.length];
-		int k = 0;
-		for (int i = 0; i < arr.length; i++) {
-			if (arr[i] != x && !edges[arr[i]][x]) {
-				tmpArr[k] = arr[i];
-				k++;
-			}
-		}
-
-		int[] narr = new int[k];
-		for (int i = 0; i < k; i++)
-			narr[i] = tmpArr[i];
-
-		return narr;
-	}
-
-	private int findMaxDegreeVertex(int[] vertices, int[] degrees) {
-
-		int max = degrees[vertices[0]];
-		int index = 0;
-		for (int i = 1; i < vertices.length; i++) {
-			if (degrees[vertices[i]] > max) {
-				max = degrees[vertices[i]];
-				index = i;
-			}
-		}
-
-		return vertices[index];
-	}
-
-	public int getEdgeNum() {
-		return edgeNum;
-	}
+        @Override
+        public int compareTo(Object o) {
+            if (o instanceof Vertex) {
+                Vertex vertex = (Vertex) o;
+                if (vertex.getDegree() > this.getDegree())
+                    return 1;
+                else if (vertex.getDegree() == this.getDegree())
+                    return 0;
+                else
+                    return -1;
+            } else
+                return 0;
+        }
+    }
 
 }
