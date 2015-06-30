@@ -85,6 +85,10 @@ public class DivideClass {
         return timeComposition;
     }
 
+    public int getMaxStudentNumber() {
+        return maxStudentNumber;
+    }
+
     @Override
     public String toString() {
         return course.toString() + "[" + number + "]";

@@ -53,9 +53,8 @@ public class Constructor {
 
             long start = System.currentTimeMillis();
 
-            StudentManager studentManager = new StudentManager(students, log);
+            StudentManager studentManager = new StudentManager(students, courses, log);
             studentManager.sortRandomly();
-            studentManager.sort();
             classes = studentManager.assignStudents();
 
             if (log) {
