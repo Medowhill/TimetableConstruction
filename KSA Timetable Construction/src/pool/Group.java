@@ -5,6 +5,12 @@ import java.util.LinkedHashSet;
 
 public class Group {
 
+    public static final int FIVE = 0, FOUR = 1, THREE = 2, THREE_CONT = 3, TWO = 4, TWO_CONT = 5, ONE = 6, THREE_FULL_CONT = 7;
+
+    private static final int[][] timeComposition = {{0, 1, 2, 3, 4}, {0, 1, 2, 3}, {2, 3, 4}, {0, 1, 2}, {3, 4}, {0, 1}, {4}, {}};
+
+    private static boolean[][] intersectPeriod;
+
     public final int number;
 
     private ArrayList<DivideClass> classes;
@@ -15,6 +21,24 @@ public class Group {
         this.number = number;
         this.classes = new ArrayList<>();
         this.periods = new LinkedHashSet<>();
+    }
+
+    public static void prepare() {
+        intersectPeriod = new boolean[timeComposition.length][timeComposition.length];
+        for (int type1 = 0; type1 < timeComposition.length; type1++) {
+            for (int type2 = 0; type2 < timeComposition.length; type2++) {
+                int[] comp1 = timeComposition[type1];
+                int[] comp2 = timeComposition[type2];
+                for (int i : comp1)
+                    for (int j : comp2)
+                        if (i == j)
+                            intersectPeriod[type1][type2] = true;
+            }
+        }
+    }
+
+    public static boolean intersectPeriod(int type1, int type2) {
+        return intersectPeriod[type1][type2];
     }
 
 }

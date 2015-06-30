@@ -45,13 +45,8 @@ class Parser {
         // 과목 시수 구성 parsing
         line = scanner.nextLine();
         data = line.split(",");
-        for (int i = 0; i < data.length; i++) {
-            String[] timeCompositionString = data[i].split("R");
-            int[] timeComposition = new int[timeCompositionString.length];
-            for (int j = 0; j < timeCompositionString.length; j++)
-                timeComposition[j] = Integer.parseInt(timeCompositionString[j]);
-            courses.get(i).setTimeComposition(timeComposition);
-        }
+        for (int i = 0; i < data.length; i++)
+            courses.get(i).setTimeComposition(Integer.parseInt(data[i]));
 
         scanner.close();
 
@@ -86,18 +81,15 @@ class Parser {
     }
 
     // 교시 정보를 parsing
-    Period[][] parsePeriod(String fileName) throws FileNotFoundException {
-        Period[][] periods = new Period[5][];
+    ArrayList<Period> parsePeriod(String fileName) throws FileNotFoundException {
+        ArrayList<Period> periods = new ArrayList<>();
 
         Scanner scanner = new Scanner(new File(fileName));
 
-        for (int i = 0; i < 5; i++) {
+        while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             String[] data = line.split(",");
-
-            periods[i] = new Period[data.length];
-            for (int j = 0; j < data.length; j++)
-                periods[i][j] = new Period(i, Integer.parseInt(data[j]));
+            periods.add(new Period(Integer.parseInt(data[0]), Integer.parseInt(data[1])));
         }
 
         return periods;

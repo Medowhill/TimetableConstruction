@@ -12,8 +12,13 @@ public class Graph {
 
     private boolean[][] edgeSet;
 
+    private int minColor;
+    private int[] color;
+
     public Graph(int size) {
         this.size = size;
+        this.minColor = 13;
+        this.color = new int[size];
 
         vertices = new Vertex[size];
         for (int i = 0; i < size; i++)
@@ -42,7 +47,6 @@ public class Graph {
         Collections.sort(vertexList);
 
         vertexList.get(0).color = 1;
-        System.out.println(vertexList.get(0).number);
         vertexList.remove(0);
 
         for (int i = 1; i < size; i++) {
@@ -51,8 +55,6 @@ public class Graph {
                 if (current.getDegreeOfSaturation() < vertex.getDegreeOfSaturation())
                     current = vertex;
             vertexList.remove(current);
-
-            System.out.println(current.number);
 
             for (int j = 1; j <= i + 1; j++) {
                 boolean b = true;
@@ -73,6 +75,58 @@ public class Graph {
         for (int i = 0; i < vertices.length; i++)
             color[i] = vertices[i].color;
         return color;
+    }
+
+    public int[] coloring_exact_slow() {
+        ArrayList<Vertex> vertexList = new ArrayList<>(size);
+        for (Vertex vertex : vertices)
+            vertexList.add(vertex);
+        Collections.sort(vertexList);
+
+        vertexList.get(0).color = 1;
+        vertexList.remove(0);
+
+        coloring_exact_slow(vertexList, 1);
+
+        return color;
+    }
+
+    private void coloring_exact_slow(ArrayList<Vertex> vertexList, int maxColor) {
+
+        if (maxColor > minColor)
+            return;
+
+        if (vertexList.isEmpty()) {
+            if (maxColor < minColor) {
+                minColor = maxColor;
+                System.out.println(minColor);
+                for (int i = 0; i < vertices.length; i++)
+                    color[i] = vertices[i].color;
+            }
+            return;
+        }
+
+        Vertex current = vertexList.get(0);
+        for (Vertex vertex : vertexList)
+            if (current.getDegreeOfSaturation() < vertex.getDegreeOfSaturation())
+                current = vertex;
+        vertexList.remove(current);
+
+        for (int i = 1; i <= maxColor + 1; i++) {
+            boolean b = true;
+            for (Vertex vertex : current.edges) {
+                if (vertex.color == i) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
+                current.color = i;
+                coloring_exact_slow(vertexList, Math.max(i, maxColor));
+            }
+        }
+
+        vertexList.add(current);
     }
 
     public int[] coloring_exact() {
