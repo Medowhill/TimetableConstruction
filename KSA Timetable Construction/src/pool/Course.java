@@ -40,14 +40,29 @@ public class Course {
         return assigningClass;
     }
 
+    // 분반 수 getter
+    public int getClassNumber() {
+        return classNumber;
+    }
+
     // 분반 수 setter
     public void setClassNumber(int classNumber) {
         this.classNumber = classNumber;
     }
 
+    // 학생 수 getter
+    public int getStudentNumber() {
+        return studentNumber;
+    }
+
     // 학생 수 setter
     public void setStudentNumber(int studentNumber) {
         this.studentNumber = studentNumber;
+    }
+
+    // 수업 시수 구성 getter
+    public int getTimeComposition() {
+        return timeComposition;
     }
 
     // 수업 시수 구성 setter
