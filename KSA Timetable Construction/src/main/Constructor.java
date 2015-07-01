@@ -4,7 +4,10 @@
 
 package main;
 
-import pool.*;
+import pool.Course;
+import pool.DivideClass;
+import pool.Period;
+import pool.Student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +23,7 @@ public class Constructor {
     public static void main(String[] args) {
 
         final boolean LOG = true;
-        final int N = 1;
+        final int N = 100;
 
         int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
         long AVE_TIME = 0, MIN_TIME = Long.MAX_VALUE, MAX_TIME = 0;
@@ -43,11 +46,11 @@ public class Constructor {
             ArrayList<Period> periods = null;
 
             // Parsing
-            Parser parser = new Parser(LOG, pw_log);
+            Parser parser = new Parser(inputDir, LOG, pw_log);
             try {
-                courses = parser.parseCourse(inputDir + "course.csv");
-                students = parser.parseStudent(inputDir + "student.csv");
-                periods = parser.parsePeriod(inputDir + "period.csv");
+                courses = parser.parseCourse();
+                students = parser.parseStudent();
+                periods = parser.parsePeriod();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 return;
@@ -57,16 +60,14 @@ public class Constructor {
             long start = System.currentTimeMillis();
 
             // Student assigning
-            StudentManager studentManager = new StudentManager(students, LOG);
-            studentManager.sortRandomly();
+            StudentManager studentManager = new StudentManager(students, LOG, pw_log);
             studentManager.sort();
             classes = studentManager.assignStudents();
             // //////////
 
             // Class assigning
-            Group.prepare();
-            ClassManager classManager = new ClassManager(LOG);
-            int colors = classManager.assignClasses(classes, periods);
+            ClassManager classManager = new ClassManager(classes, periods, LOG, pw_log);
+            int colors = classManager.assignClasses();
             // //////////
 
             long end = System.currentTimeMillis();
@@ -87,8 +88,8 @@ public class Constructor {
             // //////////
 
             // Log
-            System.out.println(x + 1);
             if (LOG) {
+                x = N;
                 pw_log.println("==========COURSE DATA==========");
                 for (Course course : courses)
                     pw_log.println(course.name + "\t" + course.getClassNumber() + "c\t" + course.getStudentNumber()
@@ -111,7 +112,8 @@ public class Constructor {
                 for (DivideClass divideClass : classes)
                     pw_log.println(divideClass.toString()
                             + divideClass.getPeriods());
-            }
+            } else
+                System.out.println(x + 1);
             // //////////
         }
 

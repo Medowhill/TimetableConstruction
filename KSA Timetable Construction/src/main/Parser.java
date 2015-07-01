@@ -17,21 +17,25 @@ import java.util.Scanner;
 class Parser {
     // 파일을 읽어 정보를 parsing하는 parser
 
+    private static final String courseFileName = "course.csv", studentFileName = "student.csv", periodFileName = "period.csv";
+
     private final boolean LOG;
     private final PrintWriter pw;
 
+    private final String inputDir;
     private ArrayList<Course> courses;
 
-    Parser(boolean log, PrintWriter pw) {
+    Parser(String inputDir, boolean log, PrintWriter pw) {
+        this.inputDir = inputDir;
         this.LOG = log;
         this.pw = pw;
     }
 
     // 과목 정보를 parsing
-    ArrayList<Course> parseCourse(String fileName) throws FileNotFoundException {
+    ArrayList<Course> parseCourse() throws FileNotFoundException {
         courses = new ArrayList<>();
 
-        Scanner scanner = new Scanner(new File(fileName));
+        Scanner scanner = new Scanner(new File(inputDir + courseFileName));
 
         // 과목명 parsing
         String line = scanner.nextLine();
@@ -63,11 +67,11 @@ class Parser {
     }
 
     // 학생 정보를 parsing
-    ArrayList<Student> parseStudent(String fileName)
+    ArrayList<Student> parseStudent()
             throws FileNotFoundException {
         ArrayList<Student> students = new ArrayList<>();
 
-        Scanner scanner = new Scanner(new File(fileName));
+        Scanner scanner = new Scanner(new File(inputDir + studentFileName));
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
@@ -90,10 +94,10 @@ class Parser {
     }
 
     // 교시 정보를 parsing
-    ArrayList<Period> parsePeriod(String fileName) throws FileNotFoundException {
+    ArrayList<Period> parsePeriod() throws FileNotFoundException {
         ArrayList<Period> periods = new ArrayList<>();
 
-        Scanner scanner = new Scanner(new File(fileName));
+        Scanner scanner = new Scanner(new File(inputDir + periodFileName));
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();

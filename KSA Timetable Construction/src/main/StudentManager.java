@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 class StudentManager {
 
-    private static final int LIMIT = 3;
+    private static final int LIMIT = 5;
 
     private final boolean LOG;
     private final PrintWriter pw;
@@ -24,12 +24,13 @@ class StudentManager {
         this.pw = pw;
     }
 
-    // 학생을 무작위 순서로 배열
-    void sortRandomly() {
-        Collections.shuffle(students);
-    }
-
     void sort() {
+
+        if (LOG)
+            pw.println("==========STUDENT SORTING==========");
+
+        Collections.shuffle(students);
+
         HashSet<Course> cSet = new HashSet<>();
         boolean b = true;
 

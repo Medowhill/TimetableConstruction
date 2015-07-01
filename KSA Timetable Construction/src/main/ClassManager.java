@@ -1,21 +1,27 @@
 package main;
 
-import pool.DivideClass;
-import pool.Graph;
-import pool.Group;
-import pool.Student;
+import pool.*;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 class ClassManager {
 
-    private boolean log;
+    private final boolean LOG;
+    private final PrintWriter pw;
 
-    ClassManager(boolean log) {
-        this.log = log;
+    private ArrayList<DivideClass> classes;
+    private ArrayList<Period> periods;
+
+    ClassManager(ArrayList<DivideClass> classes, ArrayList<Period> periods, boolean log, PrintWriter pw) {
+        this.classes = classes;
+        this.periods = periods;
+        this.LOG = log;
+        this.pw = pw;
     }
 
-    int assignClasses(ArrayList<DivideClass> classes, ArrayList periods) {
+    int assignClasses() {
+        Group.prepare();
 
         Graph graph = new Graph(classes.size());
 
@@ -29,9 +35,7 @@ class ClassManager {
         }
 
         int[] colors = graph.coloring();
-        if (log)
-            for (int color : colors)
-                System.out.println(color);
+
         int max = 0;
         for (int color : colors)
             if (color > max)
