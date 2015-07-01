@@ -4,8 +4,6 @@
 
 package pool;
 
-import java.util.ArrayList;
-
 public class Course {
     // 과목
 
@@ -21,10 +19,11 @@ public class Course {
     // 과목의 수업 시수 구성
     private int timeComposition;
 
-    private ArrayList<DivideClass> classes;
-
     // 현재 학생을 배정 중인 분반 객체이다.
-    private int assigningClass;
+    private DivideClass assigningClass;
+
+    // 지금까지 만든 분반의 수이다.
+    private int madeClass;
 
     // 생성자
     public Course(String name) {
@@ -33,9 +32,12 @@ public class Course {
 
     // 현재 학생을 배정 중인 분반을 return
     public DivideClass getAssigningClass() {
-        if (classes.isEmpty())
-            return null;
-        return classes.get(assigningClass);
+        if (assigningClass == null || assigningClass.isFull())
+            assigningClass = new DivideClass(this, ++madeClass, studentNumber
+                    / classNumber
+                    + ((studentNumber % classNumber >= madeClass) ? 1 : 0),
+                    timeComposition);
+        return assigningClass;
     }
 
     // 분반 수 setter
@@ -46,26 +48,11 @@ public class Course {
     // 학생 수 setter
     public void setStudentNumber(int studentNumber) {
         this.studentNumber = studentNumber;
-        classes = new ArrayList<>();
-        for (int i = 0; i < classNumber; i++)
-            classes.add(new DivideClass(this, i + 1, studentNumber / classNumber
-                    + ((studentNumber % classNumber >= i + 1) ? 1 : 0), timeComposition));
     }
 
     // 수업 시수 구성 setter
     public void setTimeComposition(int timeComposition) {
         this.timeComposition = timeComposition;
-    }
-
-    public void nextClass() {
-        if (classes.isEmpty())
-            return;
-        if (classes.get(assigningClass).isFull())
-            classes.remove(assigningClass);
-        else
-            assigningClass++;
-        if (assigningClass == classes.size())
-            assigningClass = 0;
     }
 
     @Override
