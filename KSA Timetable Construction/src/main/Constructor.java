@@ -28,7 +28,8 @@ public class Constructor {
         PrintWriter pw_result = null, pw_log = null;
         try {
             pw_result = new PrintWriter(new File(outputFile));
-            pw_log = new PrintWriter(new File(logFile));
+            if (LOG)
+                pw_log = new PrintWriter(new File(logFile));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
             return;
@@ -42,7 +43,7 @@ public class Constructor {
             ArrayList<Period> periods = null;
 
             // Parsing
-            Parser parser = new Parser();
+            Parser parser = new Parser(LOG, pw_log);
             try {
                 courses = parser.parseCourse(inputDir + "course.csv");
                 students = parser.parseStudent(inputDir + "student.csv");
@@ -115,7 +116,8 @@ public class Constructor {
         }
 
         pw_result.close();
-        pw_log.close();
+        if (LOG)
+            pw_log.close();
 
         System.out.println("NUM\tTIME");
         System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);

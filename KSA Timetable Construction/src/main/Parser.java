@@ -10,13 +10,22 @@ import pool.Student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 class Parser {
     // 파일을 읽어 정보를 parsing하는 parser
 
+    private final boolean LOG;
+    private final PrintWriter pw;
+
     private ArrayList<Course> courses;
+
+    Parser(boolean log, PrintWriter pw) {
+        this.LOG = log;
+        this.pw = pw;
+    }
 
     // 과목 정보를 parsing
     ArrayList<Course> parseCourse(String fileName) throws FileNotFoundException {

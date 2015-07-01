@@ -4,30 +4,29 @@ import pool.Course;
 import pool.DivideClass;
 import pool.Student;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 class StudentManager {
 
     private static final int LIMIT = 3;
 
-    private boolean log;
+    private final boolean LOG;
+    private final PrintWriter pw;
 
     private ArrayList<Student> students;
 
-    StudentManager(ArrayList<Student> students, boolean log) {
+    StudentManager(ArrayList<Student> students, boolean log, PrintWriter pw) {
         this.students = students;
-        this.log = log;
+        this.LOG = log;
+        this.pw = pw;
     }
 
     // 학생을 무작위 순서로 배열
     void sortRandomly() {
-        for (int i = 0; i < students.size(); i++) {
-            int rand = (int) (Math.random() * (students.size() - i)) + i;
-            Student tmp = students.get(rand);
-            students.set(rand, students.get(i));
-            students.set(i, tmp);
-        }
+        Collections.shuffle(students);
     }
 
     void sort() {
@@ -85,9 +84,8 @@ class StudentManager {
                         cSet.remove(course);
             }
 
-            if (log)
-                System.out.println(i + "(" + x + "," + cSet.size() + "): "
-                        + student + ": " + student.getCourses());
+            if (LOG)
+                pw.println(i + "(" + x + "," + cSet.size() + "): " + student + ": " + student.getCourses());
         }
     }
 
