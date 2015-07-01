@@ -25,6 +25,9 @@ public class Course {
     // 지금까지 만든 분반의 수이다.
     private int madeClass;
 
+    // 해당 학년의 필수 과목 0이면 필수가 아니다.
+    private int necessary;
+
     // 생성자
     public Course(String name) {
         this.name = name;
@@ -68,6 +71,16 @@ public class Course {
     // 수업 시수 구성 setter
     public void setTimeComposition(int timeComposition) {
         this.timeComposition = timeComposition;
+    }
+
+    // 필수 학년 getter
+    public int getNecessary() {
+        return necessary;
+    }
+
+    // 필수 학년 setter
+    public void setNecessary(int necessary) {
+        this.necessary = necessary;
     }
 
     @Override
