@@ -1,5 +1,5 @@
 /**
- * (C) 2015. È«Àç¹Î all rights reserved.
+ * (C) 2015. ????©ö? all rights reserved.
  */
 
 package main;
@@ -53,8 +53,9 @@ public class Constructor {
 
             long start = System.currentTimeMillis();
 
-            StudentManager studentManager = new StudentManager(students, courses, log);
+            StudentManager studentManager = new StudentManager(students, log);
             studentManager.sortRandomly();
+            studentManager.sort();
             classes = studentManager.assignStudents();
 
             if (log) {
