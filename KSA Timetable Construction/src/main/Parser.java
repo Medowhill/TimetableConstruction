@@ -61,12 +61,6 @@ class Parser {
         for (int i = 0; i < data.length; i++)
             courses.get(i).setTimeComposition(Integer.parseInt(data[i]));
 
-        // 과목 필수 학년 parsing
-        line = scanner.nextLine();
-        data = line.split(",");
-        for (int i = 0; i < data.length; i++)
-            courses.get(i).setNecessary(Integer.parseInt(data[i]));
-
         scanner.close();
 
         return courses;
