@@ -61,7 +61,6 @@ public class Constructor {
 
             // Student assigning
             StudentManager studentManager = new StudentManager(students, LOG, pw_log);
-            studentManager.sort();
             classes = studentManager.assignStudents();
             // //////////
 
