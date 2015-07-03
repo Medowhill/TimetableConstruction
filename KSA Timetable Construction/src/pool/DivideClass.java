@@ -14,7 +14,7 @@ public class DivideClass {
     // 분반 번호
     public final int number;
     // 분반 정원
-    private final int maxStudentNumber;
+    private int maxStudentNumber;
     // 분반의 과목
     private Course course;
     // 아직 분반의 수업 시수
@@ -83,6 +83,10 @@ public class DivideClass {
     // Time Composition getter
     public int getTimeComposition() {
         return timeComposition;
+    }
+
+    public int getBalance() {
+        return maxStudentNumber - students.size();
     }
 
     @Override

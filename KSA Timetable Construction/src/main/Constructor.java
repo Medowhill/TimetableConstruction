@@ -18,12 +18,12 @@ public class Constructor {
 
     final static String outputFile = "D:\\_data\\result.csv";
     final static String logFile = "D:\\_data\\log.txt";
-    final static String inputDir = "D:\\_data\\2015_2_1\\";
+    final static String inputDir = "D:\\_data\\2015_2\\";
 
     public static void main(String[] args) {
 
         final boolean LOG = true;
-        final int N = 100;
+        final int N = 1;
 
         int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
         long AVE_TIME = 0, MIN_TIME = Long.MAX_VALUE, MAX_TIME = 0;
@@ -88,7 +88,6 @@ public class Constructor {
 
             // Log
             if (LOG) {
-                x = N;
                 pw_log.println("==========COURSE DATA==========");
                 for (Course course : courses)
                     pw_log.println(course.name + "\t" + course.getClassNumber() + "c\t" + course.getStudentNumber()

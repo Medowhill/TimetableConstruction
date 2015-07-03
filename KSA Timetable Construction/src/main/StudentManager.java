@@ -11,16 +11,13 @@ import java.util.HashSet;
 
 class StudentManager {
 
-    private static final int LIMIT = 5;
+    private static final int N = 5, LIMIT = 5;
 
     private final boolean LOG;
     private final PrintWriter pw;
 
     // 전체 학생 리스트
     private ArrayList<Student> mStudents;
-
-    // 학년 별 학생 리스트
-    private ArrayList<Student>[] mStudentsGrade;
 
     // 전체 분반 리스트
     private ArrayList<DivideClass> mClasses;
@@ -32,12 +29,8 @@ class StudentManager {
         this.LOG = log;
         this.pw = pw;
 
-        mStudents = students;
-        mStudentsGrade = new ArrayList[3];
-        for (int i = 0; i < mStudentsGrade.length; i++)
-            mStudentsGrade[i] = new ArrayList<>();
-        for (Student student : students)
-            mStudentsGrade[student.grade - 1].add(student);
+        mStudents = new ArrayList<>();
+        mStudents.addAll(students);
 
         mClasses = new ArrayList<>();
     }
@@ -45,153 +38,202 @@ class StudentManager {
     // 학생을 분반에 배정
     ArrayList<DivideClass> assignStudents() {
 
-        ArrayList<DivideClass> classes = new ArrayList<>();
-
         if (LOG)
-            pw.println("==========STUDENT SORTING==========");
+            pw.println("==========STUDENT ASSIGNING==========");
 
-        for (int n = 0; n < mStudentsGrade.length; n++) {
-            ArrayList<Student> students = this.mStudentsGrade[n];
+        while (!mStudents.isEmpty()) {
+            Collections.shuffle(mStudents);
 
-            // Random한 순서로 배열
-            Collections.shuffle(students);
+            // N명이 공통으로 가진 과목을 최대로 만드는 N명을 찾고 신청한 과목의 합집합을 구한다.
+            ArrayList<Student> students = findMaxSameCourse(N);
+            ArrayList<Course> courses = unionCourse(students);
 
-            // 현재 배정되고 있는 학생들이 공통으로 신청한 과목의 set
-            HashSet<Course> cSet = new HashSet<>();
+            for (Course course : courses) {
+                DivideClass dc = course.getAssigningClass();
+                if (!mClasses.contains(dc))
+                    mClasses.add(dc);
+            }
 
-            // 현재 배정되고 있는 학생들이 채우고 있는 필수 과목 set
-            HashSet<Course> necessarySet = new HashSet<>();
+            ArrayList<Student> addingStudents = new ArrayList<>();
+            ArrayList<Course> finCourse = new ArrayList<>();
 
-            boolean first = true;
+            // 신청한 과목들이 위에서 구한 과목에 포함되는 학생들을 찾는다.
+            for (Student student : mStudents)
+                if (!students.contains(student) && include(courses, student.getCourses()))
+                    addingStudents.add(student);
 
-            for (int i = 0; i < students.size(); i++) {
-                // i번째 학생을 결정함
+            int minBalance = courses.get(0).getBalance();
+            for (int i = 1; i < courses.size(); i++) {
+                int balance = courses.get(i).getBalance();
+                if (minBalance > balance)
+                    minBalance = balance;
+            }
 
-                Student student = null;
+            if (minBalance >= addingStudents.size()) {
+                // 모든 학생을 분반에 배정한다.
+                for (Student student : addingStudents) {
+                    for (Course course : student.getCourses()) {
+                        DivideClass dc = course.getAssigningClass();
+                        dc.addStudent(student);
+                        student.addClass(dc);
 
-                if (first) {
-                    // 기존에 정렬되던 학생들이 없을 때
-                    int max = 0;
-                    int index = i;
-
-                    for (int j = i; j < students.size(); j++) {
-                        // i번째 학생부터 마지막 학생에 대해 확인
-
-                        Student student_ = students.get(j);
-
-                        int size = 0;
-                        // 가지고 있는 해당 학년 필수 과목의 수 조사
-                        for (Course course : student_.getCourses())
-                            if (course.getNecessary() == n + 1)
-                                size++;
-
-                        // 필수 과목이 최대인 학생 저장
-                        if (size > max) {
-                            max = size;
-                            index = j;
-                        }
+                        mStudents.remove(student);
                     }
+                }
 
-                    // 학생 index 수정
-                    student = students.get(index);
-                    if (index != i) {
-                        students.set(index, students.get(i));
-                        students.set(i, student);
-                    }
-
-                    // 과목 set 갱신
-                    cSet.addAll(student.getCourses());
-                    for (Course course : student.getCourses())
-                        if (course.getNecessary() == n + 1)
-                            necessarySet.add(course);
-                    first = false;
-                } else {
-                    // 기존에 정렬되던 학생들이 있을 때
-                    int max = 0;
-                    int index = i;
-
-                    for (int j = i; j < students.size(); j++) {
-                        // i번째 학생부터 마지막 학생에 대해 확인
-
-                        Student student_ = students.get(j);
-
-                        int size = 0;
-                        // 기존에 정렬되던 학생들과 겹치는 과목의 수 조사
-                        for (Course course : student_.getCourses())
-                            if (cSet.contains(course))
-                                size++;
-
-                        // 겹치는 과목이 최대인 학생 저장
-                        if (size > max) {
-                            max = size;
-                            index = j;
-                        }
-                    }
-
-                    // 겹치는 과목의 수가 LIMIT보다 작으면 학생 정렬을 새롭게 시작
-                    if (max < LIMIT) {
-                        first = true;
-                        cSet.clear();
+                // balance가 0이 된 과목을 리스트에서 제거한다.
+                for (int i = 0; i < courses.size(); i++) {
+                    Course course = courses.get(i);
+                    if (course.getBalance() == 0) {
+                        courses.remove(i);
+                        finCourse.add(course);
+                        course.finishCurrentAssigning();
                         i--;
-                        continue;
+                    }
+                }
+            } else {
+                while (!addingStudents.isEmpty()) {
+                    // weight의 합이 최대인 학생을 찾는다.
+
+                    Student s = null;
+                    float maxWeight = -Float.MAX_VALUE;
+
+                    float ave = 0;
+                    for (Course course : courses)
+                        ave += course.getBalance();
+                    ave /= courses.size();
+
+                    for (Student student : addingStudents) {
+                        float weight = 0;
+                        for (Course course : student.getCourses())
+                            weight += course.getBalance() - ave;
+                        if (maxWeight < weight) {
+                            maxWeight = weight;
+                            s = student;
+                        }
                     }
 
-                    // 학생 index 수정
-                    student = students.get(index);
-                    if (index != i) {
-                        students.set(index, students.get(i));
-                        students.set(i, student);
+                    // 찾은 학생을 분반에 배정한다.
+                    for (Course course : s.getCourses()) {
+                        DivideClass dc = course.getAssigningClass();
+                        dc.addStudent(s);
+                        s.addClass(dc);
+
+                        mStudents.remove(s);
+                        addingStudents.remove(s);
                     }
 
-                    // 과목 set 갱신
-                    ArrayList<Course> cList = new ArrayList<>(cSet);
-                    for (Course course : cList)
-                        if (!student.getCourses().contains(course))
-                            cSet.remove(course);
+                    // balance가 0이 된 과목을 리스트에서 제거하고 해당 과목을 신청한 학생도 제거한다.
+                    for (int i = 0; i < courses.size(); i++) {
+                        Course course = courses.get(i);
+                        if (course.getBalance() == 0) {
+                            courses.remove(i);
+                            finCourse.add(course);
+                            course.finishCurrentAssigning();
+                            i--;
+
+                            for (int j = 0; j < addingStudents.size(); j++) {
+                                if (addingStudents.get(j).getCourses().contains(course)) {
+                                    addingStudents.remove(j);
+                                    j--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 배정이 종료되지 않은 과목에 대해서 학생들을 배정한다.
+            boolean first = true;
+            while (!courses.isEmpty()) {
+                sort(mStudents);
+
+                for (int i = 0; i < mStudents.size(); i++) {
+                    Student student = mStudents.get(i);
+                    boolean able1 = true, able2 = false;
+
+                    // 배정이 종료된 과목을 가지지 않은 학생들을 찾는다.
+                    if (first) {
+                        for (Course course : student.getCourses()) {
+                            if (finCourse.contains(course)) {
+                                able1 = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 배정이 종료되지 않은 과목을 하나라도 가진 학생들을 찾는다.
+                    if (able1) {
+                        for (Course course : student.getCourses()) {
+                            if (courses.contains(course)) {
+                                able2 = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 찾은 학생을 배정한다.
+                    if (able1 && able2) {
+                        for (Course course : student.getCourses()) {
+                            DivideClass dc = course.getAssigningClass();
+                            dc.addStudent(student);
+                            student.addClass(dc);
+                        }
+                        mStudents.remove(student);
+                        i--;
+                    }
+
+                    // balance가 0이 된 과목을 리스트에서 제거한다.
+                    for (int j = 0; j < courses.size(); j++) {
+                        Course course = courses.get(j);
+                        if (course.getBalance() == 0) {
+                            courses.remove(j);
+                            finCourse.add(course);
+                            course.finishCurrentAssigning();
+                            j--;
+                        }
+                    }
                 }
 
-                // 분반에 학생 배정
-                for (Course course : student.getCourses()) {
-                    DivideClass divideClass = course.getAssigningClass();
-                    divideClass.addStudent(student);
-                    student.addClass(divideClass);
-
-                    if (divideClass.getStudentNumber() == 1)
-                        classes.add(divideClass);
-                }
+                first = false;
             }
         }
 
-        return classes;
+        return mClasses;
     }
 
+    // N명의 학생들이 모두 신청한 과목의 수를 최대로 만드는 N명을 찾아 return
     private ArrayList<Student> findMaxSameCourse(int N) {
         MAX = 0;
         maxStudents = new ArrayList<>();
-        for (int i = 0; i < 3; i++)
+        for (int i = 1; i <= 3; i++)
             findMaxSameCourse(new ArrayList<Student>(N), N, i);
+        if (maxStudents.size() == 0)
+            return findMaxSameCourse(N - 1);
         return maxStudents;
     }
 
+    // students의 학생들에 grade에 맞는 remainStudents만큼의 학생을 추가해서 모두 신청한 과목의 수를 조사
     private void findMaxSameCourse(ArrayList<Student> students, int remainStudents, int grade) {
-        for (Student student : mStudentsGrade[grade]) {
-            if (!students.contains(student)) {
+        for (Student student : mStudents) {
+            if (student.grade == grade && !students.contains(student)) {
                 students.add(student);
                 int same = sameCourse(students).size();
                 if (same > MAX) {
                     if (remainStudents > 1) {
                         findMaxSameCourse(students, remainStudents - 1, grade);
-                        students.remove(student);
                     } else {
                         MAX = same;
                         maxStudents.clear();
                         maxStudents.addAll(students);
                     }
                 }
+                students.remove(student);
             }
         }
     }
 
+    // students의 학생들이 모두 신청한 과목들의 집합을 return
     private ArrayList<Course> sameCourse(ArrayList<Student> students) {
         ArrayList<Course> courses = new ArrayList<>();
 
@@ -212,6 +254,7 @@ class StudentManager {
         return courses;
     }
 
+    // students의 학생들이 신청한 과목들의 합집합을 return
     private ArrayList<Course> unionCourse(ArrayList<Student> students) {
         ArrayList<Course> courses = new ArrayList<>();
 
@@ -221,6 +264,74 @@ class StudentManager {
                     courses.add(course);
 
         return courses;
+    }
+
+    // c2의 과목이 c1에 포함되는지 return
+    private boolean include(ArrayList<Course> c1, ArrayList<Course> c2) {
+        for (Course course : c2)
+            if (!c1.contains(course))
+                return false;
+        return true;
+    }
+
+    // 학생들의 과목이 많이 겹치는 순서로 학생들을 정렬한다.
+    private void sort(ArrayList<Student> students) {
+
+        // 공통으로 학생들이 가지고 있는 과목
+        HashSet<Course> cSet = new HashSet<>();
+
+        // 새로운 기준으로 학생 정렬을 시작하는가
+        boolean first = true;
+
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            int max = 0;
+            int index = i;
+            int maxCourse = 0;
+
+            // index i에 올 학생을 찾는다.
+            for (int j = i; j < students.size(); j++) {
+                Student student_ = students.get(j);
+                if (student_.getCourses().size() > maxCourse)
+                    maxCourse = student_.getCourses().size();
+
+                int size = 0;
+                if (first)
+                    size = student_.getCourses().size();
+                else
+                    for (Course course : student_.getCourses())
+                        if (cSet.contains(course))
+                            size++;
+
+                if (size > max) {
+                    student = student_;
+                    max = size;
+                    index = j;
+                }
+            }
+
+            if (max < Math.min(LIMIT, maxCourse)) {
+                first = true;
+                cSet.clear();
+                i--;
+                continue;
+            }
+
+            if (index != i) {
+                students.set(index, students.get(i));
+                students.set(i, student);
+            }
+
+            if (first) {
+                cSet.addAll(student.getCourses());
+                first = false;
+            } else {
+                ArrayList<Course> cList = new ArrayList<>(cSet);
+                for (Course course : cList)
+                    if (!student.getCourses().contains(course))
+                        cSet.remove(course);
+            }
+        }
     }
 
 }

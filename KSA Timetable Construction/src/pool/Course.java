@@ -19,10 +19,13 @@ public class Course {
     // 과목의 수업 시수 구성
     private int timeComposition;
 
-    // 현재 학생을 배정 중인 분반 객체이다.
+    // 남은 분반에 배정할 학생의 수
+    private int remainStudentNumber;
+
+    // 현재 학생을 배정중인 분반
     private DivideClass assigningClass;
 
-    // 지금까지 만든 분반의 수이다.
+    // 현재까지 만든 분반의 수
     private int madeClass;
 
     // 해당 학년의 필수 과목 0이면 필수가 아니다.
@@ -35,12 +38,20 @@ public class Course {
 
     // 현재 학생을 배정 중인 분반을 return
     public DivideClass getAssigningClass() {
-        if (assigningClass == null || assigningClass.isFull())
-            assigningClass = new DivideClass(this, ++madeClass, studentNumber
-                    / classNumber
-                    + ((studentNumber % classNumber >= madeClass) ? 1 : 0),
+        if (assigningClass == null)
+            assigningClass = new DivideClass(this, ++madeClass,
+                    remainStudentNumber / (classNumber - madeClass + 1) + ((remainStudentNumber % (classNumber - madeClass + 1) != 0) ? 1 : 0),
                     timeComposition);
         return assigningClass;
+    }
+
+    public int getBalance() {
+        return assigningClass.getBalance();
+    }
+
+    public void finishCurrentAssigning() {
+        remainStudentNumber -= assigningClass.getStudentNumber();
+        assigningClass = null;
     }
 
     // 분반 수 getter
@@ -61,6 +72,7 @@ public class Course {
     // 학생 수 setter
     public void setStudentNumber(int studentNumber) {
         this.studentNumber = studentNumber;
+        remainStudentNumber = studentNumber;
     }
 
     // 수업 시수 구성 getter
