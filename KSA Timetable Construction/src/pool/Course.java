@@ -11,7 +11,7 @@ public class Course {
     public final String name;
 
     // 과목의 분반 리스트
-    public final DivideClass[] classes;
+    private final DivideClass[] classes;
 
     // 과목에 속한 분반의 수
     private final int classNumber;
@@ -31,7 +31,23 @@ public class Course {
 
         classes = new DivideClass[classNumber];
         for (int i = 0; i < classNumber; i++)
-            classes[i] = new DivideClass(this, i + 1, studentNumber / classNumber, timeComposition);
+            classes[i] = new DivideClass(this, i + 1, studentNumber / classNumber + 1, timeComposition);
+    }
+
+    public int getClassNumber() {
+        return classNumber;
+    }
+
+    public DivideClass[] getClasses() {
+        return classes;
+    }
+
+    public int getStudentNumber() {
+        return studentNumber;
+    }
+
+    public int getTimeComposition() {
+        return timeComposition;
     }
 
     @Override
@@ -39,4 +55,8 @@ public class Course {
         return name;
     }
 
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

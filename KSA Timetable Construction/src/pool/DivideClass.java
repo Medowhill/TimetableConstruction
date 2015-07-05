@@ -13,12 +13,16 @@ public class DivideClass {
 
     // 분반 번호
     public final int number;
+
     // 분반 정원
-    private int maxStudentNumber;
+    private final int maxStudentNumber;
+
     // 분반의 과목
     private Course course;
+
     // 아직 분반의 수업 시수
     private int timeComposition;
+
     // 분반에 배정된 학생들
     private LinkedHashSet<Student> students;
 
@@ -26,8 +30,7 @@ public class DivideClass {
     private ArrayList<Period> periods;
 
     // 생성자
-    public DivideClass(Course course, int number, int maxStudentNumber,
-                       int timeComposition) {
+    public DivideClass(Course course, int number, int maxStudentNumber, int timeComposition) {
         this.course = course;
         this.number = number;
         this.maxStudentNumber = maxStudentNumber;
@@ -37,9 +40,8 @@ public class DivideClass {
         periods = new ArrayList<>();
     }
 
-    // 분반의 정원이 다 찼는지를 return
-    public boolean isFull() {
-        return students.size() == maxStudentNumber;
+    public boolean isEmpty() {
+        return students.isEmpty();
     }
 
     // 분반에 학생을 추가
@@ -80,13 +82,35 @@ public class DivideClass {
         return periods;
     }
 
+    // Max student getter
+    public int getMaxStudentNumber() {
+        return maxStudentNumber;
+    }
+
     // Time Composition getter
     public int getTimeComposition() {
         return timeComposition;
     }
 
-    public int getBalance() {
-        return maxStudentNumber - students.size();
+    public boolean hasEdgeAlready(DivideClass dc) {
+        for (Student student : students)
+            if (student.getClasses().contains(dc))
+                return true;
+        return false;
+    }
+
+    public int multipleEdge(Course course) {
+        boolean[] edge = new boolean[course.getClassNumber()];
+        for (Student student : students)
+            for (DivideClass dc : student.getClasses())
+                if (dc.course == course)
+                    edge[dc.number - 1] = true;
+
+        int sum = 0;
+        for (int i = 0; i < edge.length; i++)
+            if (edge[i])
+                sum++;
+        return sum;
     }
 
     @Override

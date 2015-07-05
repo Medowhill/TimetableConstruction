@@ -39,29 +39,24 @@ class Parser {
 
         // 과목명 parsing
         String line = scanner.nextLine();
-        String[] data = line.split(",");
-        for (String name : data)
-            courses.add(new Course(name));
+        String[] data1 = line.split(",");
 
         // 과목 분반 수 parsing
         line = scanner.nextLine();
-        data = line.split(",");
-        for (int i = 0; i < data.length; i++)
-            courses.get(i).setClassNumber(Integer.parseInt(data[i]));
+        String[] data2 = line.split(",");
 
         // 과목 학생 수 parsing
         line = scanner.nextLine();
-        data = line.split(",");
-        for (int i = 0; i < data.length; i++)
-            courses.get(i).setStudentNumber(Integer.parseInt(data[i]));
+        String[] data3 = line.split(",");
 
         // 과목 시수 구성 parsing
         line = scanner.nextLine();
-        data = line.split(",");
-        for (int i = 0; i < data.length; i++)
-            courses.get(i).setTimeComposition(Integer.parseInt(data[i]));
+        String[] data4 = line.split(",");
 
         scanner.close();
+
+        for (int i = 0; i < data1.length; i++)
+            courses.add(new Course(data1[i], Integer.parseInt(data2[i]), Integer.parseInt(data3[i]), Integer.parseInt(data4[i])));
 
         return courses;
     }
