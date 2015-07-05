@@ -18,7 +18,7 @@ public class Constructor {
 
     final static String outputFile = "D:\\_data\\result.csv";
     final static String logFile = "D:\\_data\\log.txt";
-    final static String inputDir = "D:\\_data\\2015_2\\";
+    final static String inputDir = "D:\\_data\\2015_2_1\\";
 
     public static void main(String[] args) {
 

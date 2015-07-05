@@ -42,6 +42,8 @@ class StudentManager {
             pw.println("==========STUDENT ASSIGNING==========");
 
         while (!mStudents.isEmpty()) {
+            System.out.println(mStudents.size());
+
             Collections.shuffle(mStudents);
 
             // N명이 공통으로 가진 과목을 최대로 만드는 N명을 찾고 신청한 과목의 합집합을 구한다.
@@ -59,7 +61,7 @@ class StudentManager {
 
             // 신청한 과목들이 위에서 구한 과목에 포함되는 학생들을 찾는다.
             for (Student student : mStudents)
-                if (!students.contains(student) && include(courses, student.getCourses()))
+                if (include(courses, student.getCourses()))
                     addingStudents.add(student);
 
             int minBalance = courses.get(0).getBalance();
