@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 class StudentManager {
 
-    private static final int NEW_EDGE = 1, MULTIPLE_EDGE = 4, LIMIT = 6;
+    private static final int NEW_EDGE = 1, MULTIPLE_EDGE = 4, LIMIT = 4;
 
     private final boolean LOG;
     private final PrintWriter pw;
@@ -36,7 +36,7 @@ class StudentManager {
         mClasses = new ArrayList<>();
     }
 
-    void sort() {
+    private void sort() {
 
         if (LOG)
             pw.println("==========STUDENT SORTING==========");
@@ -110,11 +110,47 @@ class StudentManager {
     // 학생을 분반에 배정
     ArrayList<DivideClass> assignStudents() {
 
+        sort();
+
         for (Student student : mStudents) {
 
             minimumEdge(student);
 
             for (DivideClass divideClass : minSumClasses) {
+                if (divideClass.getStudentNumber() == 0)
+                    mClasses.add(divideClass);
+
+                student.addClass(divideClass);
+                divideClass.addStudent(student);
+            }
+        }
+
+        return mClasses;
+    }
+
+    ArrayList<DivideClass> assignStudents_slow() {
+        Collections.shuffle(mStudents);
+
+        while (!mStudents.isEmpty()) {
+            if (LOG)
+                System.out.println(mStudents.size());
+
+            int min = Integer.MAX_VALUE;
+            ArrayList<DivideClass> classes = new ArrayList<>();
+            Student student = null;
+
+            for (Student student_ : mStudents) {
+                minimumEdge(student_);
+                if (minSum < min) {
+                    min = minSum;
+                    classes.clear();
+                    classes.addAll(minSumClasses);
+                    student = student_;
+                }
+            }
+
+            mStudents.remove(student);
+            for (DivideClass divideClass : classes) {
                 if (divideClass.getStudentNumber() == 0)
                     mClasses.add(divideClass);
 
@@ -154,7 +190,7 @@ class StudentManager {
                 for (DivideClass dcAlready : classes) {
                     if (Group.intersectPeriod(dc.getTimeComposition(), dcAlready.getTimeComposition())) {
                         if (!dcAlready.hasEdgeAlready(dc)) {
-                            int edge = dcAlready.multipleEdge(course);
+                            int edge = dcAlready.multipleEdge(course) + dc.multipleEdge(dcAlready.getCourse());
                             if (edge == 0)
                                 sum_ += NEW_EDGE;
                             else

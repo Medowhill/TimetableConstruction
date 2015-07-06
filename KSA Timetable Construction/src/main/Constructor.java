@@ -59,8 +59,7 @@ public class Constructor {
             // Student assigning
             Group.prepare();
             StudentManager studentManager = new StudentManager(students, LOG, pw_log);
-            studentManager.sort();
-            classes = studentManager.assignStudents();
+            classes = studentManager.assignStudents_slow();
             // //////////
 
             // Class assigning
