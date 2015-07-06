@@ -29,6 +29,9 @@ public class DivideClass {
     // 분반이 배치된 교시들
     private ArrayList<Period> periods;
 
+    // 그룹
+    private Group group;
+
     // 생성자
     public DivideClass(Course course, int number, int maxStudentNumber, int timeComposition) {
         this.course = course;
@@ -111,6 +114,10 @@ public class DivideClass {
             if (edge[i])
                 sum++;
         return sum;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     @Override

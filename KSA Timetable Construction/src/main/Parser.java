@@ -53,10 +53,15 @@ class Parser {
         line = scanner.nextLine();
         String[] data4 = line.split(",");
 
+        // 동시에 수업 가능 분반 수 parsing
+        line = scanner.nextLine();
+        String[] data5 = line.split(",");
+
         scanner.close();
 
         for (int i = 0; i < data1.length; i++)
-            courses.add(new Course(data1[i], Integer.parseInt(data2[i]), Integer.parseInt(data3[i]), Integer.parseInt(data4[i])));
+            courses.add(new Course(data1[i], Integer.parseInt(data2[i]), Integer.parseInt(data3[i]),
+                    Integer.parseInt(data4[i]), Integer.parseInt(data5[i])));
 
         return courses;
     }

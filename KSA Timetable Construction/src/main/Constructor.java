@@ -19,15 +19,13 @@ public class Constructor {
 
     public static void main(String[] args) {
 
-        final boolean LOG = true;
-        final int N = 1;
+        final boolean LOG = false;
+        final int N = 100;
 
-        int AVE = 0, MIN = Integer.MAX_VALUE, MAX = 0;
         long AVE_TIME = 0, MIN_TIME = Long.MAX_VALUE, MAX_TIME = 0;
 
-        PrintWriter pw_result = null, pw_log = null;
+        PrintWriter pw_log = null;
         try {
-            pw_result = new PrintWriter(new File(outputFile));
             if (LOG)
                 pw_log = new PrintWriter(new File(logFile));
         } catch (FileNotFoundException e1) {
@@ -59,29 +57,23 @@ public class Constructor {
             // Student assigning
             Group.prepare();
             StudentManager studentManager = new StudentManager(students, LOG, pw_log);
-            classes = studentManager.assignStudents_slow();
+            classes = studentManager.assignStudents();
             // //////////
 
             // Class assigning
-            ClassManager classManager = new ClassManager(classes, periods, LOG, pw_log);
-            int colors = classManager.assignClasses();
+            ClassManager classManager = new ClassManager(classes, courses, LOG, pw_log);
+            int[] colors = classManager.assignClasses();
+            // //////////
+
+            // Period assigning
+            PeriodManager periodManager = new PeriodManager(classes, periods, colors, LOG, pw_log);
+            periodManager.assignPeriod();
             // //////////
 
             long end = System.currentTimeMillis();
 
             // Result
             long time = end - start;
-            pw_result.println(colors + "," + time);
-            AVE += colors;
-            AVE_TIME += time;
-            if (colors > MAX)
-                MAX = colors;
-            if (colors < MIN)
-                MIN = colors;
-            if (time > MAX_TIME)
-                MAX_TIME = time;
-            if (time < MIN_TIME)
-                MIN_TIME = time;
             // //////////
 
             // Log
@@ -104,23 +96,17 @@ public class Constructor {
                 for (Student student : students)
                     pw_log.println(student.id + ": " + student.getClasses());
                 pw_log.println();
-                pw_log.println("==========PERIOD DATA==========");
-                for (DivideClass divideClass : classes)
-                    pw_log.println(divideClass.toString()
-                            + divideClass.getPeriods());
             } else
                 System.out.println(x + 1);
             // //////////
         }
 
-        pw_result.close();
         if (LOG)
             pw_log.close();
 
-        System.out.println("NUM\tTIME");
-        System.out.println(1. * AVE / N + "\t" + 1. * AVE_TIME / N);
-        System.out.println(MIN + "\t" + MIN_TIME);
-        System.out.println(MAX + "\t" + MAX_TIME);
-
+        System.out.println("TIME");
+        System.out.println(1. * AVE_TIME / N);
+        System.out.println(MIN_TIME);
+        System.out.println(MAX_TIME);
     }
 }
