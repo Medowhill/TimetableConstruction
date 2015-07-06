@@ -8,10 +8,11 @@ import pool.Student;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 class StudentManager {
 
-    private static final int NEW_EDGE = 1, MULTIPLE_EDGE = 2;
+    private static final int NEW_EDGE = 1, MULTIPLE_EDGE = 4, LIMIT = 6;
 
     private final boolean LOG;
     private final PrintWriter pw;
@@ -35,34 +36,85 @@ class StudentManager {
         mClasses = new ArrayList<>();
     }
 
-    // 학생을 분반에 배정
-    ArrayList<DivideClass> assignStudents() {
+    void sort() {
 
         if (LOG)
-            pw.println("==========STUDENT ASSIGNING==========");
+            pw.println("==========STUDENT SORTING==========");
 
         Collections.shuffle(mStudents);
 
-        while (!mStudents.isEmpty()) {
-            if (LOG)
-                System.out.println(mStudents.size());
+        HashSet<Course> cSet = new HashSet<>();
+        boolean b = true;
 
-            int min = Integer.MAX_VALUE;
-            ArrayList<DivideClass> classes = new ArrayList<>();
-            Student student = null;
+        int x = 0;
 
-            for (Student student_ : mStudents) {
-                minimumEdge(student_);
-                if (minSum < min) {
-                    min = minSum;
-                    classes.clear();
-                    classes.addAll(minSumClasses);
+        for (int i = 0; i < mStudents.size(); i++) {
+
+            Student student = mStudents.get(i);
+            int max = 0;
+            int index = i;
+
+            int maxCourseNum = 0;
+
+            for (int j = i; j < mStudents.size(); j++) {
+                Student student_ = mStudents.get(j);
+
+                if (student_.getCourses().size() > maxCourseNum)
+                    maxCourseNum = student_.getCourses().size();
+
+                int size = 0;
+                if (b)
+                    size = student_.getCourses().size();
+                else
+                    for (Course course : student_.getCourses())
+                        if (cSet.contains(course))
+                            size++;
+
+                if (size > max) {
                     student = student_;
+                    max = size;
+                    index = j;
                 }
             }
 
-            mStudents.remove(student);
-            for (DivideClass divideClass : classes) {
+            if (max < Math.min(LIMIT, maxCourseNum)) {
+                b = true;
+                x = 0;
+                cSet.clear();
+                i--;
+                continue;
+            }
+
+            x++;
+
+            if (index != i) {
+                mStudents.set(index, mStudents.get(i));
+                mStudents.set(i, student);
+            }
+
+            if (b) {
+                cSet.addAll(student.getCourses());
+                b = false;
+            } else {
+                ArrayList<Course> cList = new ArrayList<>(cSet);
+                for (Course course : cList)
+                    if (!student.getCourses().contains(course))
+                        cSet.remove(course);
+            }
+
+            if (LOG)
+                pw.println(i + "(" + x + "," + cSet.size() + "): " + student + ": " + student.getCourses());
+        }
+    }
+
+    // 학생을 분반에 배정
+    ArrayList<DivideClass> assignStudents() {
+
+        for (Student student : mStudents) {
+
+            minimumEdge(student);
+
+            for (DivideClass divideClass : minSumClasses) {
                 if (divideClass.getStudentNumber() == 0)
                     mClasses.add(divideClass);
 
