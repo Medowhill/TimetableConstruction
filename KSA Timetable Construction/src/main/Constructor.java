@@ -4,10 +4,7 @@
 
 package main;
 
-import pool.Course;
-import pool.DivideClass;
-import pool.Period;
-import pool.Student;
+import pool.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +57,7 @@ public class Constructor {
             long start = System.currentTimeMillis();
 
             // Student assigning
+            Group.prepare();
             StudentManager studentManager = new StudentManager(students, LOG, pw_log);
             classes = studentManager.assignStudents();
             // //////////

@@ -2,6 +2,7 @@ package main;
 
 import pool.Course;
 import pool.DivideClass;
+import pool.Group;
 import pool.Student;
 
 import java.io.PrintWriter;
@@ -43,6 +44,9 @@ class StudentManager {
         Collections.shuffle(mStudents);
 
         while (!mStudents.isEmpty()) {
+            if (LOG)
+                System.out.println(mStudents.size());
+
             int min = Integer.MAX_VALUE;
             ArrayList<DivideClass> classes = new ArrayList<>();
             Student student = null;
@@ -96,12 +100,14 @@ class StudentManager {
 
                 int sum_ = 0;
                 for (DivideClass dcAlready : classes) {
-                    if (!dcAlready.hasEdgeAlready(dc)) {
-                        int edge = dcAlready.multipleEdge(course);
-                        if (edge == 0)
-                            sum_ += NEW_EDGE;
-                        else
-                            sum_ += MULTIPLE_EDGE * edge;
+                    if (Group.intersectPeriod(dc.getTimeComposition(), dcAlready.getTimeComposition())) {
+                        if (!dcAlready.hasEdgeAlready(dc)) {
+                            int edge = dcAlready.multipleEdge(course);
+                            if (edge == 0)
+                                sum_ += NEW_EDGE;
+                            else
+                                sum_ += MULTIPLE_EDGE * edge;
+                        }
                     }
                 }
 

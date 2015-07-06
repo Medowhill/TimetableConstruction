@@ -29,10 +29,14 @@ public class Group {
             for (int type2 = 0; type2 < timeComposition.length; type2++) {
                 int[] comp1 = timeComposition[type1];
                 int[] comp2 = timeComposition[type2];
-                for (int i : comp1)
-                    for (int j : comp2)
-                        if (i == j)
+                for (int i : comp1) {
+                    for (int j : comp2) {
+                        if (i == j) {
                             intersectPeriod[type1][type2] = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
